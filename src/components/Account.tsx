@@ -1,7 +1,6 @@
 "use client";
 
 import { User, Settings, LogOut, ChevronRight, Mail, Trophy, Target, Flame } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export default function Account() {

@@ -177,7 +177,7 @@ export default function Practice() {
   );
 }
 
-}
+
 
 function ArrowRight({ size, className }: { size?: number, className?: string }) {
     return (

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Mail, Lock, ArrowRight, Github } from "lucide-react";
+import { Mail, Lock, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Login() {
@@ -84,10 +84,7 @@ export default function Login() {
                  </div>
              </div>
 
-             <div className="grid grid-cols-2 gap-3">
-                 <button className="flex items-center justify-center gap-2 border-2 border-gray-100 p-2.5 rounded-xl hover:bg-gray-50 transition-colors font-medium text-gray-600 text-sm">
-                     <Github size={18} /> Github
-                 </button>
+             <div className="grid grid-cols-1 gap-3">
                  <button className="flex items-center justify-center gap-2 border-2 border-gray-100 p-2.5 rounded-xl hover:bg-gray-50 transition-colors font-medium text-gray-600 text-sm">
                      <span className="font-bold text-lg leading-none">G</span> Google
                  </button>

@@ -46,7 +46,6 @@ export default function Rewards() {
           <div className="flex justify-between items-center">
               {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => {
                   const active = i < STREAK;
-                  const isToday = i === STREAK - 1;
                   return (
                       <div key={i} className="flex flex-col items-center gap-2">
                           <div className={cn(

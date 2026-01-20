@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Volume2, Bookmark, ArrowRight, BookOpen } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Search, Volume2, Bookmark, BookOpen } from "lucide-react";
+import { motion } from "framer-motion";
 
 const MOCK_DICTIONARY: Record<string, { definition: string; bangla: string; example: string; type: string }> = {
   "serendipity": {
@@ -115,7 +115,7 @@ export default function Dictionary() {
 
                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Example</p>
-                  <p className="text-gray-600 italic">"{result.example}"</p>
+                  <p className="text-gray-600 italic">&quot;{result.example}&quot;</p>
                </div>
             </div>
 
