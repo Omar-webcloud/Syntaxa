@@ -5,9 +5,9 @@ import Link from "next/link";
 
 export default function Account() {
   const USER = {
-    name: "Alex Johnson",
-    email: "alex.j@example.com",
-    avatar: "AJ",
+    name: "Abul Hayat",
+    email: "hayat.abul@example.com",
+    avatar: "AH",
     stats: {
       quizzes: 42,
       accuracy: 85,
