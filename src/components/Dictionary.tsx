@@ -58,6 +58,29 @@ export default function Dictionary() {
     }
   };
 
+  const playSound = async (word: string) => {
+    try {
+      const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+      const data = await response.json();
+      const audioUrl = data[0]?.phonetics?.find((p: any) => p.audio)?.audio;
+      
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        audio.play();
+      } else {
+        // Fallback to Web Speech API
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        window.speechSynthesis.speak(utterance);
+      }
+    } catch (err) {
+      console.error("Audio play failed, falling back to synthesis", err);
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
@@ -127,7 +150,10 @@ export default function Dictionary() {
                     )}
                 </div>
 
-                <button className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                <button 
+                  onClick={() => playSound(result.en)}
+                  className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform"
+                >
                     <Volume2 size={24} />
                     Listen Pronunciation
                 </button>
@@ -164,7 +190,10 @@ export default function Dictionary() {
                         )}
                     </div>
 
-                    <button className="w-full h-[60px] bg-white dark:bg-[#1C1625] border-2 border-[#E8DDED] dark:border-[#2D2438] text-black dark:text-[#F3F4F6] rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                    <button 
+                      onClick={() => playSound(wordOfDay.en)}
+                      className="w-full h-[60px] bg-white dark:bg-[#1C1625] border-2 border-[#E8DDED] dark:border-[#2D2438] text-black dark:text-[#F3F4F6] rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform"
+                    >
                         <Volume2 size={24} />
                         Listen Pronunciation
                     </button>
