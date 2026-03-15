@@ -11,13 +11,11 @@ export default function Rewards() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-8">
         
-        {/* Header */}
         <div className="space-y-1">
           <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">My Rewards</h1>
           <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">Keep Your Streak Alive to Earn More</p>
         </div>
 
-        {/* Gems & Streak Cards */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-white dark:bg-[#1C1625] p-6 rounded-[24px] shadow-sm flex flex-col items-center justify-center space-y-2 h-[120px] border border-transparent dark:border-[#2D2438]">
              <span className="text-3xl">💎</span>
@@ -35,7 +33,6 @@ export default function Rewards() {
           </div>
         </div>
 
-        {/* Weekly Streak Card */}
         <div className="bg-white dark:bg-[#1C1625] rounded-[32px] p-6 shadow-md border border-gray-50 dark:border-[#2D2438]">
             <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-[18px] mb-6 px-1">Weekly Streak</h3>
             
@@ -61,7 +58,6 @@ export default function Rewards() {
                 })}
             </div>
 
-            {/* Reward Hint Bar */}
             <div className="bg-[#FFF0DC] dark:bg-[#2C1F10] p-3 rounded-2xl flex items-center justify-center gap-2 border border-[#FFE0B2] dark:border-[#2D2438]">
                 <Star size={20} fill="#FC9502" className="text-[#FC9502]" />
                 <p className="text-[13px] text-black dark:text-[#F3F4F6] font-bold">
@@ -70,7 +66,6 @@ export default function Rewards() {
             </div>
         </div>
 
-        {/* Achievements Section */}
         <div className="space-y-4">
             <div className="flex justify-between items-center px-1">
                 <h3 className="font-extrabold text-black dark:text-white text-[20px]">Achievements</h3>
@@ -107,7 +102,6 @@ export default function Rewards() {
             </div>
         </div>
 
-        {/* Redeem Section */}
         <div className="space-y-4">
             <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-[20px] px-1">Redeem Your Gems</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -162,7 +156,6 @@ function AchievementCard({
                 </div>
                 <p className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-medium leading-tight mr-4">{desc}</p>
                 
-                {/* Progress Bar */}
                 <div className="h-1.5 w-full bg-gray-100 dark:bg-[#0F0A15] rounded-full mt-2 overflow-hidden mr-4">
                     <div 
                         className={cn("h-full rounded-full", checked || progress > 90 ? "bg-green-600" : locked ? "bg-gray-300 dark:bg-[#3D334D]" : "bg-green-600")} 
@@ -171,7 +164,6 @@ function AchievementCard({
                 </div>
             </div>
 
-            {/* Status Icon Overlay */}
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
                 {checked && (
                     <div className="bg-green-600 rounded-full p-1 border-2 border-white">

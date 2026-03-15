@@ -12,7 +12,6 @@ export default function Account() {
   const [soundActive, setSoundActive] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch for theme-specific UI
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -20,8 +19,8 @@ export default function Account() {
   if (!mounted) return null;
 
   const USER = {
-    name: "Fariha Munir",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sheba", // Caucasian style
+    name: "Abul Hayat",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sheba",
     stats: {
       quizzes: 46,
       streak: 5,
@@ -32,13 +31,10 @@ export default function Account() {
 
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex justify-center pb-24 transition-colors duration-300">
-      {/* Container - Mobile first, wider on Tablet */}
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 flex flex-col items-center">
         
-        {/* Status Bar Space */}
         <div className="h-10 w-full" />
 
-        {/* Avatar block */}
         <div className="relative mt-4">
           <div className="w-[140px] h-[140px] rounded-[16px] overflow-hidden bg-[#E5CCFA] border-4 border-white dark:border-[#2D2438] shadow-sm flex items-center justify-center">
             <Image 
@@ -50,7 +46,6 @@ export default function Account() {
               unoptimized
             />
           </div>
-          {/* Edit Icon (floating circle) */}
           <div className="absolute -bottom-2 -right-2 w-[40px] h-[40px] rounded-full bg-[#E5CCFA] flex items-center justify-center border-2 border-white dark:border-[#2D2438] shadow-sm cursor-pointer hover:scale-110 transition-transform">
              <Settings size={18} className="text-[#8A56A4]" />
           </div>
@@ -59,9 +54,7 @@ export default function Account() {
         {/* User Name */}
         <h1 className="mt-6 text-[24px] font-bold">{USER.name}</h1>
 
-        {/* Stats Grid - 2 cols on mobile, 4 on tablet */}
         <div className="mt-10 w-full grid grid-cols-2 md:grid-cols-4 gap-[12px]">
-            {/* Total Quiz */}
             <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
                 <div className="w-[49px] h-[48px] rounded-full bg-[#F0E4FF] dark:bg-[#2A2035] flex items-center justify-center shrink-0">
                     <Target size={22} className="text-[#8A56A4] dark:text-[#A87BC7]" />
@@ -72,7 +65,6 @@ export default function Account() {
                 </div>
             </div>
 
-            {/* Total Streak */}
             <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
                 <div className="w-[49px] h-[48px] rounded-full bg-[#FFF0DC] dark:bg-[#352820] flex items-center justify-center shrink-0">
                     <Flame size={22} className="text-[#FC9502]" />
@@ -83,7 +75,6 @@ export default function Account() {
                 </div>
             </div>
 
-            {/* Total Gem */}
             <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
                 <div className="w-[49px] h-[48px] rounded-full bg-[#E7FBFF] dark:bg-[#1E2D35] flex items-center justify-center shrink-0">
                     <Trophy size={20} className="text-[#3AAAFF]" />
@@ -94,7 +85,6 @@ export default function Account() {
                 </div>
             </div>
 
-            {/* Time Spent */}
             <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
                 <div className="w-[49px] h-[48px] rounded-full bg-[#E7FBFF] dark:bg-[#1E2D35] flex items-center justify-center shrink-0">
                     <Clock size={22} className="text-[#2EC0FF]" />
@@ -106,12 +96,10 @@ export default function Account() {
             </div>
         </div>
 
-        {/* Settings Header */}
         <div className="mt-8 w-full text-left">
            <h2 className="text-[18px] font-bold px-2">Settings</h2>
         </div>
 
-        {/* Settings Block */}
         <div className="mt-4 w-full bg-[#E8DDED] dark:bg-[#1C1625] rounded-[24px] p-[16px] flex flex-col gap-[12px] border border-transparent dark:border-[#2D2438]">
             <SettingRow 
               label="Daily Reminder" 
@@ -130,7 +118,6 @@ export default function Account() {
             />
         </div>
 
-        {/* Log Out Button */}
         <div className="mt-4 w-full">
              <button className="w-full h-[51px] bg-white dark:bg-[#1C1625] rounded-[16px] flex items-center justify-center shadow-sm border border-transparent dark:border-[#2D2438] active:scale-95 transition-transform">
                  <span className="text-[16px] font-bold text-[#D00000] dark:text-[#FF4D4D]">Log Out</span>

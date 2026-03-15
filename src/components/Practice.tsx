@@ -10,13 +10,11 @@ export default function Practice() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
         
-        {/* Header */}
         <div className="space-y-1 mt-4">
           <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Sentence Practice</h1>
           <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">Improve Your Writing with Interactive Exercise.</p>
         </div>
 
-        {/* Stats Row */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
@@ -34,7 +32,6 @@ export default function Practice() {
           </div>
         </div>
 
-        {/* Challenge Card */}
         <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438] flex flex-col items-center text-center">
             <span className="bg-[#48CAFB] text-white text-[13px] font-black px-4 py-1.5 rounded-[10px]">
                 Correct The Sentence
@@ -61,7 +58,6 @@ export default function Practice() {
             </div>
         </div>
 
-        {/* Practice Exercises Grid - 2 cols on mobile, 4 on tablet */}
         <div className="space-y-4 pb-4">
             <h3 className="text-[20px] font-black px-2 text-black dark:text-[#F3F4F6]">Practice Exercises</h3>
             

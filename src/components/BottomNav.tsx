@@ -53,7 +53,6 @@ export default function BottomNav() {
           );
         })}
       </nav>
-      {/* Active Indicator Bar (optional based on design nuances, but keeping it clean) */}
     </div>
   );
 }

@@ -10,13 +10,11 @@ export default function Dictionary() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
         
-        {/* Header */}
         <div className="space-y-1 mt-4">
           <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Dictionary</h1>
           <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">From English to Bangla</p>
         </div>
 
-        {/* Search Bar */}
         <div className="flex gap-3">
             <div className="relative flex-1">
                 <input
@@ -34,7 +32,6 @@ export default function Dictionary() {
             </button>
         </div>
 
-        {/* Search Result Card */}
         <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
             <div className="space-y-1">
                 <h2 className="text-3xl font-black text-[#8A56A4] dark:text-[#A87BC7]">সংজ্ঞায়িত করা</h2>
@@ -58,7 +55,6 @@ export default function Dictionary() {
             </button>
         </div>
 
-        {/* Word of The Day Section */}
         <div className="space-y-4">
             <h3 className="text-[20px] font-black px-2 dark:text-[#F3F4F6] text-black">Word of The Day</h3>
             

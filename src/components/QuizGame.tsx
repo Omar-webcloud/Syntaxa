@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export default function QuizGame() {
-  const currentQuestionIndex = 3; // Setting to 3 to match "4/10" in screenshot
+  const currentQuestionIndex = 3;
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const score = 2; // Match "2 Corrects" in screenshot
+  const score = 2;
 
   const MAX_QUESTIONS = 10;
   const progress = ((currentQuestionIndex + 1) / MAX_QUESTIONS) * 100;
@@ -16,13 +16,11 @@ export default function QuizGame() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
         
-        {/* Welcome Header */}
         <div className="space-y-1 mt-4">
-          <p className="text-[18px] font-semibold text-[#111] dark:text-[#9CA3AF] opacity-80">Welcome Back Prity!</p>
+          <p className="text-[18px] font-semibold text-[#111] dark:text-[#9CA3AF] opacity-80">Welcome Back Abul Hayat!</p>
           <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Your Daily Quiz</h1>
         </div>
 
-        {/* Progress Info */}
         <div className="space-y-3">
           <div className="flex justify-between text-[14px] font-bold text-gray-500 dark:text-[#9CA3AF]">
              <span>Question {currentQuestionIndex + 1}/{MAX_QUESTIONS}</span>
@@ -36,7 +34,6 @@ export default function QuizGame() {
           </div>
         </div>
 
-        {/* Question Card */}
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -74,7 +71,6 @@ export default function QuizGame() {
             </div>
         </motion.div>
 
-        {/* Action Button */}
         <div className="pt-6">
             <button className="w-full h-[64px] bg-[#8A56A4] text-white rounded-[24px] text-[18px] font-bold shadow-lg shadow-purple-200 dark:shadow-none active:scale-95 transition-transform">
                 Check Answer
