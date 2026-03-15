@@ -1,142 +1,94 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Volume2, Bookmark, BookOpen } from "lucide-react";
-import { motion } from "framer-motion";
-
-const MOCK_DICTIONARY: Record<string, { definition: string; bangla: string; example: string; type: string }> = {
-  "serendipity": {
-    definition: "The occurrence and development of events by chance in a happy or beneficial way.",
-    bangla: "ভাগ্যক্রমে প্রাপ্তি (Serendipity)",
-    example: "We found the restaurant by pure serendipity.",
-    type: "noun"
-  },
-  "ephemeral": {
-    definition: "Lasting for a very short time.",
-    bangla: "ক্ষণস্থায়ী (Khonn-osthayi)",
-    example: "Fashions are ephemeral, changing with every season.",
-    type: "adjective"
-  },
-  "eloquent": {
-    definition: "Fluent or persuasive in speaking or writing.",
-    bangla: "বাকপটু (Bakpotu)",
-    example: "An eloquent speech that moved the audience to tears.",
-    type: "adjective"
-  },
-  "grammar": {
-    definition: "The whole system and structure of a language.",
-    bangla: "ব্যাকরণ (Byakoron)",
-    example: "English grammar can be tricky to master.",
-    type: "noun"
-  }
-};
+import { Search, X, Volume2 } from "lucide-react";
 
 export default function Dictionary() {
-  const [query, setQuery] = useState("");
-  const [result, setResult] = useState<typeof MOCK_DICTIONARY["serendipity"] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-
-    setLoading(true);
-    setSearched(true);
-    setResult(null);
-
-    setTimeout(() => {
-      const key = query.toLowerCase().trim();
-      const found = MOCK_DICTIONARY[key];
-      setResult(found || null);
-      setLoading(false);
-    }, 600);
-  };
+  const [query, setQuery] = useState("Define");
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-6 pb-24">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <BookOpen className="text-violet-600" />
-          Dictionary
-        </h1>
-        <p className="text-gray-500 text-sm">English to Bangla Dictionary & Meanings</p>
-      </div>
+    <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
+      <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
+        
+        {/* Header */}
+        <div className="space-y-1 mt-4">
+          <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Dictionary</h1>
+          <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">From English to Bangla</p>
+        </div>
 
-      <form onSubmit={handleSearch} className="relative">
-        <input
-          type="text"
-          placeholder="Search a word (e.g., grammar)..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full pl-5 pr-12 py-4 rounded-2xl border-2 border-gray-100 focus:border-violet-500 focus:ring-4 focus:ring-violet-50 outline-none transition-all shadow-sm text-lg"
-        />
-        <button
-          type="submit"
-          disabled={!query.trim()}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-violet-600 text-white rounded-xl hover:bg-violet-700 disabled:opacity-50 disabled:hover:bg-violet-600 transition-colors"
-        >
-          <Search size={20} />
-        </button>
-      </form>
+        {/* Search Bar */}
+        <div className="flex gap-3">
+            <div className="relative flex-1">
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-full h-[60px] bg-white dark:bg-[#1C1625] rounded-[24px] px-6 pr-12 text-[18px] font-medium shadow-sm border border-transparent dark:border-[#2D2438] focus:border-[#8A56A4] outline-none text-black dark:text-[#F3F4F6]"
+                />
+                <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">
+                    <X size={20} />
+                </button>
+            </div>
+            <button className="w-[60px] h-[60px] bg-[#8A56A4] text-white rounded-[24px] flex items-center justify-center shadow-lg shadow-purple-200 dark:shadow-none active:scale-95 transition-transform">
+                <Search size={24} />
+            </button>
+        </div>
 
-      <div className="min-h-[300px]">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center h-40 space-y-4 text-gray-400">
-             <div className="w-8 h-8 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
-             <p>Searching...</p>
-          </div>
-        ) : result ? (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-6"
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-800 capitalize">{query}</h2>
-                <span className="text-gray-500 italic text-sm">{result.type}</span>
-              </div>
-              <button className="p-2.5 bg-violet-50 text-violet-600 rounded-full hover:bg-violet-100 transition-colors">
-                <Volume2 size={24} />
-              </button>
+        {/* Search Result Card */}
+        <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
+            <div className="space-y-1">
+                <h2 className="text-3xl font-black text-[#8A56A4] dark:text-[#A87BC7]">সংজ্ঞায়িত করা</h2>
+                <p className="text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">/dıˈfaın/</p>
             </div>
 
             <div className="space-y-4">
-               <div className="bg-violet-50 p-4 rounded-2xl">
-                  <p className="text-xs font-bold text-violet-400 uppercase tracking-widest mb-1">Bangla Meaning</p>
-                  <p className="text-xl font-medium text-violet-900">{result.bangla}</p>
-               </div>
-
-               <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Definition</p>
-                  <p className="text-gray-700 text-lg leading-relaxed">{result.definition}</p>
-               </div>
-
-               <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Example</p>
-                  <p className="text-gray-600 italic">&quot;{result.example}&quot;</p>
-               </div>
+                <p className="text-[18px] font-bold leading-snug text-black dark:text-[#F3F4F6]">
+                    State or describe exactly the nature, scope, or meaning of.
+                </p>
+                <div className="pl-4 border-l-4 border-[#E8DDED] dark:border-[#3D334D]">
+                    <p className="text-[14px] text-gray-400 dark:text-[#9CA3AF] italic font-medium leading-relaxed">
+                        &quot;Define a word while you define its full meaning and examples.&quot;
+                    </p>
+                </div>
             </div>
 
-            <button className="w-full py-3 border-2 border-gray-100 text-gray-600 font-semibold rounded-xl hover:border-violet-200 hover:text-violet-600 hover:bg-violet-50 transition-all flex items-center justify-center gap-2">
-              <Bookmark size={18} />
-              Save Word
+            <button className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                <Volume2 size={24} />
+                Listen Pronunciation
             </button>
-          </motion.div>
-        ) : searched ? (
-           <div className="text-center py-10 text-gray-400">
-              <p className="text-lg">No results found for &quot;{query}&quot;</p>
-              <p className="text-sm">Try &apos;serendipity&apos;, &apos;grammar&apos;, or &apos;eloquent&apos;</p>
-           </div>
-        ) : (
-          <div className="text-center py-10 space-y-4 opacity-50">
-             <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
-                <Search size={32} className="text-gray-300" />
-             </div>
-             <p className="text-gray-400">Search for a word to see its meaning and usage.</p>
-          </div>
-        )}
+        </div>
+
+        {/* Word of The Day Section */}
+        <div className="space-y-4">
+            <h3 className="text-[20px] font-black px-2 dark:text-[#F3F4F6] text-black">Word of The Day</h3>
+            
+            <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
+                <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                        <h2 className="text-3xl font-black text-black dark:text-[#F3F4F6]">Ephemeral</h2>
+                        <p className="text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">/ɪˈfɛm(ə)rəl/</p>
+                    </div>
+                    <span className="text-2xl font-black text-[#8A56A4] dark:text-[#A87BC7]">ক্ষণস্থায়ী</span>
+                </div>
+
+                <div className="space-y-4">
+                    <p className="text-[18px] font-bold leading-snug text-black dark:text-[#F3F4F6]">
+                        Lasting for a very short time; fleeting or transitory in nature.
+                    </p>
+                    <div className="pl-4 border-l-4 border-[#E8DDED] dark:border-[#3D334D]">
+                        <p className="text-[14px] text-gray-400 dark:text-[#9CA3AF] italic font-medium leading-relaxed">
+                            &quot;The beauty of a sunset is ephemeral, fading into darkness within minutes.&quot;
+                        </p>
+                    </div>
+                </div>
+
+                <button className="w-full h-[60px] bg-white dark:bg-[#1C1625] border-2 border-[#E8DDED] dark:border-[#2D2438] text-black dark:text-[#F3F4F6] rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                    <Volume2 size={24} />
+                    Listen Pronunciation
+                </button>
+            </div>
+        </div>
+
       </div>
     </div>
   );

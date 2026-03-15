@@ -12,17 +12,29 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: {
-          DEFAULT: "#8b5cf6",
+          DEFAULT: "#9833eb", // Figma deep vibrant purple
           foreground: "#ffffff",
-          50: "#f5f3ff",
-          100: "#ede9fe",
-          500: "#8b5cf6",
-          600: "#7c3aed",
-          700: "#6d28d9",
+          50: "#faf5ff",
+          100: "#f3e8ff",
+          500: "#9833eb", // Base primary
+          600: "#7e22ce", // Darker primary
+          700: "#6b21a8",
         },
         secondary: {
           DEFAULT: "#14b8a6",
           foreground: "#ffffff",
+        },
+        surface: {
+          DEFAULT: "#f3eef6", // Figma exact profile background
+        },
+        figma: {
+           card: "#e8dded",
+           toggleOn: "#8a56a4",
+           toggleOff: "#b7bbc3",
+           textMuted: "#6f6f6f",
+           statQuiz: "#f0e4ff",
+           statStreak: "#fff0dc",
+           statGem: "#e7fbff",
         },
         accent: {
           DEFAULT: "#f472b6",

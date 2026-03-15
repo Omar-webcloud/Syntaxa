@@ -1,6 +1,6 @@
 "use client";
 
-import { Trophy, Flame, Zap, Lock, Star } from "lucide-react";
+import { Check, Star, Lock, Lightbulb, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Rewards() {
@@ -8,121 +8,180 @@ export default function Rewards() {
   const STREAK = 5;
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-8 pb-24">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <Trophy className="text-violet-600" />
-          Rewards & Store
-        </h1>
-        <p className="text-gray-500 text-sm">Keep your streak alive to earn more!</p>
-      </div>
+    <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
+      <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-8">
+        
+        {/* Header */}
+        <div className="space-y-1">
+          <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">My Rewards</h1>
+          <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">Keep Your Streak Alive to Earn More</p>
+        </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center space-y-2">
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-2xl">
-                💎
+        {/* Gems & Streak Cards */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white dark:bg-[#1C1625] p-6 rounded-[24px] shadow-sm flex flex-col items-center justify-center space-y-2 h-[120px] border border-transparent dark:border-[#2D2438]">
+             <span className="text-3xl">💎</span>
+             <div className="text-center leading-tight">
+                <span className="block text-2xl font-black text-black dark:text-[#F3F4F6]">{GEMS}</span>
+                <span className="text-xs text-black dark:text-[#9CA3AF] font-bold">Total Gems</span>
+             </div>
+          </div>
+          <div className="bg-white dark:bg-[#1C1625] p-6 rounded-[24px] shadow-sm flex flex-col items-center justify-center space-y-2 h-[120px] border border-transparent dark:border-[#2D2438]">
+             <span className="text-3xl">🔥</span>
+             <div className="text-center leading-tight">
+                <span className="block text-2xl font-black text-black dark:text-[#F3F4F6]">{STREAK}</span>
+                <span className="text-xs text-black dark:text-[#9CA3AF] font-bold">Day Streak</span>
+             </div>
+          </div>
+        </div>
+
+        {/* Weekly Streak Card */}
+        <div className="bg-white dark:bg-[#1C1625] rounded-[32px] p-6 shadow-md border border-gray-50 dark:border-[#2D2438]">
+            <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-[18px] mb-6 px-1">Weekly Streak</h3>
+            
+            <div className="flex justify-between items-center mb-8 px-2">
+                {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => {
+                    const active = i < STREAK;
+                    return (
+                        <div key={i} className="flex flex-col items-center gap-2">
+                            <div className={cn(
+                                "w-11 h-11 rounded-full flex items-center justify-center transition-all",
+                                active 
+                                  ? "bg-[#FC9502] text-white shadow-md" 
+                                  : "bg-[#B7BBC3] text-gray-500"
+                            )}>
+                                {active ? <Check size={24} strokeWidth={4} /> : null}
+                            </div>
+                            <span className={cn(
+                                "text-[14px] font-bold",
+                                active ? "text-black dark:text-[#F3F4F6]" : "text-gray-400 dark:text-[#3D334D]"
+                            )}>{day}</span>
+                        </div>
+                    );
+                })}
             </div>
-            <div className="text-center">
-                <span className="block text-2xl font-black text-gray-800">{GEMS}</span>
-                <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Gems</span>
+
+            {/* Reward Hint Bar */}
+            <div className="bg-[#FFF0DC] dark:bg-[#2C1F10] p-3 rounded-2xl flex items-center justify-center gap-2 border border-[#FFE0B2] dark:border-[#2D2438]">
+                <Star size={20} fill="#FC9502" className="text-[#FC9502]" />
+                <p className="text-[13px] text-black dark:text-[#F3F4F6] font-bold">
+                   2 Days Until Your Next Big Reward (+50) <span className="text-inherit">💎</span>
+                </p>
             </div>
         </div>
-         <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center space-y-2">
-            <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center">
-                <Flame className="text-orange-500 fill-orange-500" />
+
+        {/* Achievements Section */}
+        <div className="space-y-4">
+            <div className="flex justify-between items-center px-1">
+                <h3 className="font-extrabold text-black dark:text-white text-[20px]">Achievements</h3>
+                <button className="text-[14px] font-bold text-gray-400 dark:text-gray-500">View All</button>
             </div>
-            <div className="text-center">
-                <span className="block text-2xl font-black text-gray-800">{STREAK}</span>
-                <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Day Streak</span>
+
+            <div className="space-y-3">
+                <AchievementCard 
+                    title="Grammar Master" 
+                    desc="Completed 10 basic grammar practices."
+                    icon="📚"
+                    progress={100}
+                    checked={true}
+                    iconColor="bg-[#E8DDED]"
+                />
+                <AchievementCard 
+                    title="7 Day Streak" 
+                    desc="Maintain a week-long learning habit to unlock."
+                    icon="🔥"
+                    progress={70}
+                    checked={false}
+                    statusText="5/7"
+                    iconColor="bg-[#FFF0DC]"
+                />
+                 <AchievementCard 
+                    title="100 Lesson Club" 
+                    desc="Finish 100 lessons in total to unlock."
+                    icon="📖"
+                    progress={15}
+                    checked={false}
+                    locked={true}
+                    iconColor="bg-gray-100"
+                />
             </div>
         </div>
-      </div>
 
-      <div className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-gray-800 text-lg">Weekly Streak</h3>
-              <span className="text-sm text-gray-400">Target: 7 Days</span>
-          </div>
-          <div className="flex justify-between items-center">
-              {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => {
-                  const active = i < STREAK;
-                  return (
-                      <div key={i} className="flex flex-col items-center gap-2">
-                          <div className={cn(
-                              "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all",
-                              active 
-                                ? "bg-orange-500 border-orange-500 text-white shadow-md scale-110"
-                                : "bg-gray-50 border-gray-100 text-gray-300"
-                          )}>
-                              {active ? <CheckIcon size={16} /> : null}
-                          </div>
-                          <span className={cn(
-                              "text-xs font-medium",
-                              active ? "text-orange-500" : "text-gray-300"
-                          )}>{day}</span>
-                      </div>
-                  );
-              })}
-          </div>
-          <div className="mt-6 bg-orange-50 p-4 rounded-xl flex items-center gap-3">
-              <Star className="text-orange-500 fill-orange-500" size={20} />
-              <p className="text-sm text-orange-800 font-medium">
-                  2 days until your next <span className="font-bold">Big Reward (+50 💎)</span>
-              </p>
-          </div>
-      </div>
+        {/* Redeem Section */}
+        <div className="space-y-4">
+            <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-[20px] px-1">Redeem Your Gems</h3>
+            <div className="grid grid-cols-2 gap-4">
+                 <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center gap-3 border border-gray-50 dark:border-[#2D2438]">
+                     <div className="w-12 h-12 bg-gray-100 dark:bg-[#2D2438] rounded-full flex items-center justify-center overflow-hidden">
+                        <Lightbulb className="text-yellow-500" fill="currentColor" />
+                     </div>
+                     <span className="text-[14px] font-bold text-black dark:text-[#F3F4F6]">Hint Unlock</span>
+                 </div>
+                 <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center gap-3 border border-gray-50 dark:border-[#2D2438]">
+                     <div className="w-12 h-12 bg-gray-100 dark:bg-[#2D2438] rounded-full flex items-center justify-center overflow-hidden">
+                        <GraduationCap className="text-blue-500" />
+                     </div>
+                     <span className="text-[14px] font-bold text-black dark:text-[#F3F4F6]">Advanced Quiz</span>
+                 </div>
+            </div>
+        </div>
 
-      <div className="space-y-4">
-          <h3 className="font-bold text-gray-800 text-xl px-2">Gem Store</h3>
-          
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-violet-200 transition-colors">
-              <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-red-50 rounded-xl flex items-center justify-center">
-                      <Zap className="text-red-500 fill-red-500" size={24} />
-                  </div>
-                  <div>
-                      <h4 className="font-bold text-gray-800 group-hover:text-violet-600 transition-colors">Refill Lives</h4>
-                      <p className="text-xs text-gray-400">Restore 5 hearts instantly</p>
-                  </div>
-              </div>
-              <button className="bg-gray-900 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-1 group-hover:bg-violet-600 transition-colors">
-                  50 💎
-              </button>
-          </div>
-
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between opacity-60">
-              <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center">
-                      <Lock className="text-gray-400" size={24} />
-                  </div>
-                   <div>
-                      <h4 className="font-bold text-gray-800">Pro Theme</h4>
-                      <p className="text-xs text-gray-400">Dark mode & custom colors</p>
-                  </div>
-              </div>
-              <button disabled className="bg-gray-200 text-gray-500 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-1">
-                  Locked
-              </button>
-          </div>
       </div>
     </div>
   );
 }
 
-function CheckIcon({ size }: { size: number }) {
+function AchievementCard({ 
+    title, 
+    desc, 
+    icon, 
+    progress, 
+    checked, 
+    statusText, 
+    locked, 
+    iconColor 
+}: { 
+    title: string, 
+    desc: string, 
+    icon: string, 
+    progress: number, 
+    checked?: boolean, 
+    statusText?: string, 
+    locked?: boolean,
+    iconColor: string
+}) {
     return (
-        <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width={size} 
-            height={size} 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="4" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-        >
-            <polyline points="20 6 9 17 4 12" />
-        </svg>
-    )
+        <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[24px] shadow-sm border border-gray-50 dark:border-[#2D2438] flex items-center gap-4 relative">
+            <div className={cn("w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0 dark:brightness-90", iconColor === "bg-gray-100" ? "dark:bg-[#2D2438]" : iconColor)}>
+                {icon}
+            </div>
+            <div className="flex-1 space-y-1">
+                <div className="flex justify-between items-center pr-4">
+                    <h4 className={cn("text-[16px] font-extrabold", locked ? "text-gray-400 dark:text-[#3D334D]" : "text-black dark:text-[#F3F4F6]")}>{title}</h4>
+                    {statusText && <span className="text-[11px] font-bold text-green-600 dark:text-green-500">{statusText}</span>}
+                </div>
+                <p className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-medium leading-tight mr-4">{desc}</p>
+                
+                {/* Progress Bar */}
+                <div className="h-1.5 w-full bg-gray-100 dark:bg-[#0F0A15] rounded-full mt-2 overflow-hidden mr-4">
+                    <div 
+                        className={cn("h-full rounded-full", checked || progress > 90 ? "bg-green-600" : locked ? "bg-gray-300 dark:bg-[#3D334D]" : "bg-green-600")} 
+                        style={{ width: `${progress}%` }} 
+                    />
+                </div>
+            </div>
+
+            {/* Status Icon Overlay */}
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                {checked && (
+                    <div className="bg-green-600 rounded-full p-1 border-2 border-white">
+                        <Check size={12} strokeWidth={4} className="text-white" />
+                    </div>
+                )}
+                {locked && (
+                    <Lock size={18} className="text-gray-400" />
+                )}
+            </div>
+        </div>
+    );
 }

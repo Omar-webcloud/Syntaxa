@@ -1,105 +1,162 @@
 "use client";
 
-import { User, Settings, LogOut, ChevronRight, Mail, Trophy, Target, Flame } from "lucide-react";
-import Link from "next/link";
+import { Settings, Trophy, Target, Flame, Clock } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 
 export default function Account() {
+  const { theme, setTheme } = useTheme();
+  const [reminderActive, setReminderActive] = useState(true);
+  const [soundActive, setSoundActive] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch for theme-specific UI
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   const USER = {
-    name: "Abul Hayat",
-    email: "hayat.abul@example.com",
-    avatar: "AH",
+    name: "Fariha Munir",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sheba", // Caucasian style
     stats: {
-      quizzes: 42,
-      accuracy: 85,
+      quizzes: 46,
       streak: 5,
-      gems: 124
+      gems: 124,
+      timeSpent: "6h 9m"
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-8 pb-24">
-      <div className="flex justify-between items-start">
-         <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-              <User className="text-violet-600" />
-              Profile
-            </h1>
-            <p className="text-gray-500 text-sm">Manage your account and progress.</p>
-         </div>
-         <button className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
-             <Settings size={20} />
-         </button>
-      </div>
+    <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex justify-center pb-24 transition-colors duration-300">
+      {/* Container - Mobile first, wider on Tablet */}
+      <div className="w-full max-w-[412px] md:max-w-[768px] p-6 flex flex-col items-center">
+        
+        {/* Status Bar Space */}
+        <div className="h-10 w-full" />
 
-      <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center space-y-4">
-          <div className="w-24 h-24 bg-violet-100 rounded-full flex items-center justify-center text-3xl font-bold text-violet-600 border-4 border-white shadow-sm">
-              {USER.avatar}
+        {/* Avatar block */}
+        <div className="relative mt-4">
+          <div className="w-[140px] h-[140px] rounded-[16px] overflow-hidden bg-[#E5CCFA] border-4 border-white dark:border-[#2D2438] shadow-sm flex items-center justify-center">
+            <Image 
+              src={USER.avatar} 
+              alt="Avatar" 
+              width={140}
+              height={140}
+              className="w-full h-full object-cover"
+              unoptimized
+            />
           </div>
-          <div className="text-center">
-              <h2 className="text-xl font-bold text-gray-800">{USER.name}</h2>
-              <div className="flex items-center justify-center gap-1 text-gray-400 text-sm mt-1">
-                  <Mail size={12} />
-                  <span>{USER.email}</span>
-              </div>
+          {/* Edit Icon (floating circle) */}
+          <div className="absolute -bottom-2 -right-2 w-[40px] h-[40px] rounded-full bg-[#E5CCFA] flex items-center justify-center border-2 border-white dark:border-[#2D2438] shadow-sm cursor-pointer hover:scale-110 transition-transform">
+             <Settings size={18} className="text-[#8A56A4]" />
           </div>
-          <div className="w-full grid grid-cols-2 gap-3 pt-4 border-t border-gray-100 mt-4">
-               <div className="bg-gray-50 p-3 rounded-xl text-center">
-                   <span className="block text-xl font-bold text-gray-800">{USER.stats.quizzes}</span>
-                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Quizzes</span>
-               </div>
-               <div className="bg-gray-50 p-3 rounded-xl text-center">
-                   <span className="block text-xl font-bold text-gray-800">{USER.stats.accuracy}%</span>
-                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Accuracy</span>
-               </div>
-          </div>
-      </div>
+        </div>
 
-      <div className="space-y-4">
-          <h3 className="font-bold text-gray-800 px-2">Performance stats</h3>
-          <div className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
-               <div className="p-4 flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                       <div className="bg-orange-50 p-2 rounded-lg text-orange-500">
-                           <Flame size={20} />
-                       </div>
-                       <span className="font-medium text-gray-700">Current Streak</span>
-                   </div>
-                   <span className="font-bold text-gray-900">{USER.stats.streak} Days</span>
-               </div>
-               <div className="p-4 flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                       <div className="bg-blue-50 p-2 rounded-lg text-blue-500">
-                           <Trophy size={20} />
-                       </div>
-                       <span className="font-medium text-gray-700">Total Gems</span>
-                   </div>
-                   <span className="font-bold text-gray-900">{USER.stats.gems} 💎</span>
-               </div>
-               <div className="p-4 flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                       <div className="bg-green-50 p-2 rounded-lg text-green-500">
-                           <Target size={20} />
-                       </div>
-                       <span className="font-medium text-gray-700">Best Score</span>
-                   </div>
-                   <span className="font-bold text-gray-900">10/10</span>
-               </div>
-          </div>
-      </div>
+        {/* User Name */}
+        <h1 className="mt-6 text-[24px] font-bold">{USER.name}</h1>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-           <Link href="/login" className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group">
-               <span className="font-medium text-gray-700">Switch Account</span>
-               <ChevronRight size={18} className="text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1 transition-all" />
-           </Link>
-           <button className="w-full flex items-center justify-between p-4 hover:bg-red-50 transition-colors group text-red-600 border-t border-gray-50">
-               <span className="font-medium flex items-center gap-2">
-                   <LogOut size={18} /> Logout
-               </span>
-           </button>
+        {/* Stats Grid - 2 cols on mobile, 4 on tablet */}
+        <div className="mt-10 w-full grid grid-cols-2 md:grid-cols-4 gap-[12px]">
+            {/* Total Quiz */}
+            <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
+                <div className="w-[49px] h-[48px] rounded-full bg-[#F0E4FF] dark:bg-[#2A2035] flex items-center justify-center shrink-0">
+                    <Target size={22} className="text-[#8A56A4] dark:text-[#A87BC7]" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Quiz</span>
+                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.quizzes}</span>
+                </div>
+            </div>
+
+            {/* Total Streak */}
+            <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
+                <div className="w-[49px] h-[48px] rounded-full bg-[#FFF0DC] dark:bg-[#352820] flex items-center justify-center shrink-0">
+                    <Flame size={22} className="text-[#FC9502]" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Streak</span>
+                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.streak} Days</span>
+                </div>
+            </div>
+
+            {/* Total Gem */}
+            <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
+                <div className="w-[49px] h-[48px] rounded-full bg-[#E7FBFF] dark:bg-[#1E2D35] flex items-center justify-center shrink-0">
+                    <Trophy size={20} className="text-[#3AAAFF]" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Gem</span>
+                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.gems}</span>
+                </div>
+            </div>
+
+            {/* Time Spent */}
+            <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
+                <div className="w-[49px] h-[48px] rounded-full bg-[#E7FBFF] dark:bg-[#1E2D35] flex items-center justify-center shrink-0">
+                    <Clock size={22} className="text-[#2EC0FF]" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Time Spent</span>
+                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.timeSpent}</span>
+                </div>
+            </div>
+        </div>
+
+        {/* Settings Header */}
+        <div className="mt-8 w-full text-left">
+           <h2 className="text-[18px] font-bold px-2">Settings</h2>
+        </div>
+
+        {/* Settings Block */}
+        <div className="mt-4 w-full bg-[#E8DDED] dark:bg-[#1C1625] rounded-[24px] p-[16px] flex flex-col gap-[12px] border border-transparent dark:border-[#2D2438]">
+            <SettingRow 
+              label="Daily Reminder" 
+              active={reminderActive} 
+              onToggle={() => setReminderActive(!reminderActive)}
+            />
+            <SettingRow 
+              label="Sound Effects" 
+              active={soundActive} 
+              onToggle={() => setSoundActive(!soundActive)}
+            />
+            <SettingRow 
+              label="Dark Mode" 
+              active={theme === "dark"} 
+              onToggle={() => setTheme(theme === "dark" ? "light" : "dark")}
+            />
+        </div>
+
+        {/* Log Out Button */}
+        <div className="mt-4 w-full">
+             <button className="w-full h-[51px] bg-white dark:bg-[#1C1625] rounded-[16px] flex items-center justify-center shadow-sm border border-transparent dark:border-[#2D2438] active:scale-95 transition-transform">
+                 <span className="text-[16px] font-bold text-[#D00000] dark:text-[#FF4D4D]">Log Out</span>
+             </button>
+        </div>
+
       </div>
-      
-      <p className="text-center text-xs text-gray-400">Version 1.0.0 • Syntaxa Quiz</p>
     </div>
   );
+}
+
+function SettingRow({ label, active, onToggle }: { label: string, active: boolean, onToggle: () => void }) {
+    return (
+        <div 
+          className="w-full h-[54px] bg-white dark:bg-[#0F0A15] rounded-[16px] flex items-center justify-between px-[16px] shadow-sm cursor-pointer select-none group border border-transparent dark:border-[#2D2438]"
+          onClick={onToggle}
+        >
+            <span className="text-[14px] font-semibold text-gray-700 dark:text-[#F3F4F6] group-hover:text-black dark:group-hover:text-white transition-colors">
+              {label}
+            </span>
+            <div className={cn(
+                "w-[53px] h-[33px] rounded-[22px] p-[4px] flex transition-all duration-300",
+                active ? "bg-[#8A56A4] dark:bg-[#A87BC7] justify-end" : "bg-[#B7BBC3] dark:bg-[#3D334D] justify-start"
+            )}>
+                <div className="w-[25px] h-[25px] bg-white rounded-full shadow-md transition-all border border-transparent dark:border-[#2D2438]" />
+            </div>
+        </div>
+    );
 }

@@ -1,200 +1,111 @@
 "use client";
 
 import { useState } from "react";
-import { PenTool, Check, RotateCcw } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
-
-const PRACTICE_EXERCISES = [
-  {
-    type: "correction",
-    question: "She don't like playing tennis.",
-    answer: "She doesn't like playing tennis.",
-    hint: "Think about the auxiliary verb for 'she' in present simple negative."
-  },
-  {
-    type: "fill_blank",
-    question: "I have ___ to London twice.",
-    answer: "been",
-    hint: "Past participle of 'be'."
-  },
-  {
-    type: "correction",
-    question: "He go to school every day.",
-    answer: "He goes to school every day.",
-    hint: "Third person singular adds 's' or 'es'."
-  }
-];
+import { Book, BarChart, Lightbulb, Type, Layers, Layout } from "lucide-react";
 
 export default function Practice() {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [userInput, setUserInput] = useState("");
-  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
-  const [showHint, setShowHint] = useState(false);
-
-  const exercise = PRACTICE_EXERCISES[currentIndex];
-
-  const checkAnswer = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userInput.trim()) return;
-
-    if (!userInput.trim()) return;
-
-    const normalize = (s: string) => s.toLowerCase().trim().replace(/\.$/, "");
-    
-    if (normalize(userInput) === normalize(exercise.answer)) {
-      setFeedback("correct");
-    } else {
-      setFeedback("incorrect");
-    }
-  };
-
-  const nextExercise = () => {
-    setFeedback(null);
-    setUserInput("");
-    setShowHint(false);
-    setCurrentIndex((prev) => (prev + 1) % PRACTICE_EXERCISES.length);
-  };
 
   return (
-    <div className="max-w-md mx-auto p-4 space-y-6 pb-24">
-       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <PenTool className="text-violet-600" />
-          Sentence Practice
-        </h1>
-        <p className="text-gray-500 text-sm">Improve your writing with interactive exercises.</p>
-      </div>
+    <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
+      <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
+        
+        {/* Header */}
+        <div className="space-y-1 mt-4">
+          <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Sentence Practice</h1>
+          <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">Improve Your Writing with Interactive Exercise.</p>
+        </div>
 
-      <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 min-h-[400px] flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  Exercise {currentIndex + 1}/{PRACTICE_EXERCISES.length}
-              </span>
-              <span className={cn(
-                  "px-2 py-1 rounded-full text-[10px] font-bold uppercase",
-                  exercise.type === "correction" ? "bg-orange-100 text-orange-600" : "bg-blue-100 text-blue-600"
-              )}>
-                  {exercise.type === "correction" ? "Correct the Sentence" : "Fill in the Blank"}
-              </span>
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
+             <div className="flex items-center gap-2">
+                <Book size={20} className="text-[#3AAAFF]" fill="#3AAAFF" />
+                <span className="text-[18px] font-black text-black dark:text-[#F3F4F6]">36 Lesson</span>
+             </div>
+             <span className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-bold uppercase tracking-tight">Total Practiced</span>
           </div>
-
-          <div className="flex-1 flex flex-col justify-center space-y-8">
-              <div className="text-center space-y-2">
-                  <p className="text-gray-400 text-sm font-medium uppercase">Question</p>
-                  <h3 className="text-2xl font-bold text-gray-800 leading-snug">
-                      {exercise.question}
-                  </h3>
-              </div>
-
-              <form onSubmit={checkAnswer} className="space-y-4">
-                  <div className="relative">
-                      <input 
-                        type="text" 
-                        value={userInput}
-                        onChange={(e) => setUserInput(e.target.value)}
-                        placeholder="Type your answer here..."
-                        className={cn(
-                            "w-full p-4 rounded-xl border-2 outline-none transition-all text-center font-medium text-lg",
-                            feedback === "correct" ? "border-green-500 bg-green-50 text-green-800" : 
-                            feedback === "incorrect" ? "border-red-500 bg-red-50 text-red-800" :
-                            "border-gray-200 focus:border-violet-500 focus:bg-white"
-                        )}
-                        disabled={feedback === "correct"}
-                      />
-                      {feedback === "correct" && (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-green-600">
-                              <Check size={24} />
-                          </div>
-                      )}
-                  </div>
-
-                  <AnimatePresence>
-                      {feedback === "incorrect" && (
-                          <motion.div 
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            className="text-center"
-                          >
-                            <p className="text-red-500 font-medium mb-2">Not quite right.</p>
-                            {!showHint ? (
-                                <button 
-                                    type="button"
-                                    onClick={() => setShowHint(true)}
-                                    className="text-sm text-gray-500 underline hover:text-violet-600"
-                                >
-                                    Need a hint?
-                                </button>
-                            ) : (
-                                <p className="text-sm text-yellow-600 bg-yellow-50 p-2 rounded-lg inline-block px-4">
-                                    💡 {exercise.hint}
-                                </p>
-                            )}
-                          </motion.div>
-                      )}
-                  </AnimatePresence>
-
-                  {!feedback ? (
-                      <button 
-                        type="submit"
-                        className="w-full py-3.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-transform active:scale-95 shadow-lg"
-                      >
-                          Check Answer
-                      </button>
-                  ) : (
-                       <button 
-                        type="button"
-                        onClick={nextExercise}
-                        className={cn(
-                            "w-full py-3.5 text-white rounded-xl font-bold shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2",
-                            feedback === "correct" ? "bg-green-600 hover:bg-green-700" : "bg-gray-900 hover:bg-black"
-                        )}
-                      >
-                          {feedback === "correct" ? "Next Exercise" : "Try Again / Skip"} 
-                          {feedback === "correct" && <ArrowRight size={20} />}
-                      </button>
-                  )}
-              </form>
-               <AnimatePresence>
-                {feedback === "incorrect" && (
-                     <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-center"
-                     >
-                         <button 
-                            onClick={nextExercise}
-                            className="text-gray-400 text-sm flex items-center justify-center gap-1 mx-auto hover:text-gray-600"
-                         >
-                             <RotateCcw size={14} /> Skip this question
-                         </button>
-                     </motion.div>
-                )}
-               </AnimatePresence>
+          <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
+             <div className="flex items-center gap-2">
+                <BarChart size={20} className="text-[#8A56A4]" fill="#8A56A4" />
+                <span className="text-[18px] font-black text-black dark:text-[#F3F4F6]">88%</span>
+             </div>
+             <span className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-bold uppercase tracking-tight">Average Accuracy</span>
           </div>
+        </div>
+
+        {/* Challenge Card */}
+        <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438] flex flex-col items-center text-center">
+            <span className="bg-[#48CAFB] text-white text-[13px] font-black px-4 py-1.5 rounded-[10px]">
+                Correct The Sentence
+            </span>
+
+            <div className="space-y-4 w-full">
+                <p className="text-[16px] text-black dark:text-[#F3F4F6] font-black uppercase tracking-wider opacity-60">Question</p>
+                <h3 className="text-[24px] font-black leading-tight text-black dark:text-[#F3F4F6]">
+                    She don&apos;t like playing tennis.
+                </h3>
+            </div>
+
+            <div className="w-full space-y-4 pt-2">
+                <input 
+                    type="text"
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                    placeholder="Type Your Answer Here..."
+                    className="w-full h-[64px] bg-[#F3EEF6] dark:bg-[#0F0A15] border-2 border-[#E8DDED] dark:border-[#2D2438] rounded-[24px] px-6 text-center text-[16px] font-bold text-[#8A56A4] dark:text-[#A87BC7] outline-none placeholder:text-[#B7BBC3] dark:placeholder:text-[#3D334D] focus:border-[#8A56A4]"
+                />
+                <button className="w-full h-[64px] bg-[#8A56A4] text-white rounded-[24px] text-[18px] font-bold shadow-lg shadow-purple-200 dark:shadow-none active:scale-95 transition-transform">
+                    Check Answer
+                </button>
+            </div>
+        </div>
+
+        {/* Practice Exercises Grid - 2 cols on mobile, 4 on tablet */}
+        <div className="space-y-4 pb-4">
+            <h3 className="text-[20px] font-black px-2 text-black dark:text-[#F3F4F6]">Practice Exercises</h3>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <ExerciseCategory 
+                    icon={<Lightbulb size={24} />} 
+                    title="Error Correction" 
+                    desc="Identify and Fix Common Mistakes."
+                />
+                <ExerciseCategory 
+                    icon={<Type size={24} />} 
+                    title="Tenses" 
+                    desc="Practice All Forms Present, Past and Future."
+                />
+                <ExerciseCategory 
+                    icon={<Layers size={24} />} 
+                    title="Articles & Preposition" 
+                    desc="Master the use of articles and prepositions."
+                />
+                <ExerciseCategory 
+                    icon={<Layout size={24} />} 
+                    title="Sentence Structure" 
+                    desc="Learn to build complex sentences correctly."
+                />
+            </div>
+        </div>
+
       </div>
     </div>
   );
 }
 
-
-
-function ArrowRight({ size, className }: { size?: number, className?: string }) {
+function ExerciseCategory({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
     return (
-        <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width={size} 
-            height={size} 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            className={className}
-        >
-            <path d="M5 12h14" />
-            <path d="m12 5 7 7-7 7" />
-        </svg>
-    )
+        <div className="bg-[#E8DDED] dark:bg-[#1C1625] p-5 rounded-[28px] shadow-sm flex flex-col gap-3 min-h-[160px] border border-transparent dark:border-[#2D2438]">
+            <div className="text-black dark:text-[#A87BC7]">
+                {icon}
+            </div>
+            <div className="space-y-1">
+                <h4 className="text-[16px] font-black leading-tight text-black dark:text-[#F3F4F6]">{title}</h4>
+                <p className="text-[12px] text-gray-600 dark:text-[#9CA3AF] font-medium leading-tight">
+                    {desc}
+                </p>
+            </div>
+        </div>
+    );
 }
