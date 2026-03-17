@@ -1,0 +1,212 @@
+{
+  "lessons": [
+    {
+      "topic": "Tenses",
+      "title": "Practice All Forms Present, Past and Future",
+      "patterns": [
+        {
+          "id": 1,
+          "pattern": "Subject + base verb (s/es)",
+          "tense": "Present Simple",
+          "use": "Habit, general truth",
+          "example": "She plays football."
+        },
+        {
+          "id": 2,
+          "pattern": "Subject + am/is/are + verb+ing",
+          "tense": "Present Continuous",
+          "use": "Action happening now",
+          "example": "She is playing football."
+        },
+        {
+          "id": 3,
+          "pattern": "Subject + has/have + past participle",
+          "tense": "Present Perfect",
+          "use": "Completed action with present effect",
+          "example": "She has played football."
+        },
+        {
+          "id": 4,
+          "pattern": "Subject + has/have been + verb+ing",
+          "tense": "Present Perfect Continuous",
+          "use": "Action continuing over time",
+          "example": "She has been playing for 2 hours."
+        },
+        {
+          "id": 5,
+          "pattern": "Subject + verb (past form)",
+          "tense": "Past Simple",
+          "use": "Completed action in past",
+          "example": "She played football."
+        },
+        {
+          "id": 6,
+          "pattern": "Subject + was/were + verb+ing",
+          "tense": "Past Continuous",
+          "use": "Ongoing past action",
+          "example": "She was playing football."
+        },
+        {
+          "id": 7,
+          "pattern": "Subject + had + past participle",
+          "tense": "Past Perfect",
+          "use": "Action before another past action",
+          "example": "She had played before I arrived."
+        },
+        {
+          "id": 8,
+          "pattern": "Subject + had been + verb+ing",
+          "tense": "Past Perfect Continuous",
+          "use": "Duration before past point",
+          "example": "She had been playing for hours."
+        },
+        {
+          "id": 9,
+          "pattern": "Subject + will + base verb",
+          "tense": "Future Simple",
+          "use": "Future decision or prediction",
+          "example": "She will play tomorrow."
+        },
+        {
+          "id": 10,
+          "pattern": "Subject + going to + base verb",
+          "tense": "Future (planned)",
+          "use": "Planned future action",
+          "example": "She is going to play."
+        }
+      ]
+    },
+    {
+      "topic": "Articles & Preposition",
+      "title": "Master the use of articles and prepositions",
+      "patterns": [
+        {
+          "id": 11,
+          "pattern": "a/an + singular countable noun",
+          "rule": "General or non-specific",
+          "example": "I saw a dog."
+        },
+        {
+          "id": 12,
+          "pattern": "an + vowel sound",
+          "rule": "Before vowel sound",
+          "example": "She ate an apple."
+        },
+        {
+          "id": 13,
+          "pattern": "the + specific noun",
+          "rule": "Specific or known",
+          "example": "The book is on the table."
+        },
+        {
+          "id": 14,
+          "pattern": "zero article",
+          "rule": "General plural or uncountable",
+          "example": "Water is essential."
+        },
+        {
+          "id": 15,
+          "pattern": "in + year/month/place",
+          "rule": "Used for long periods or areas",
+          "example": "She was born in 2000."
+        },
+        {
+          "id": 16,
+          "pattern": "on + day/date",
+          "rule": "Specific day",
+          "example": "He came on Monday."
+        },
+        {
+          "id": 17,
+          "pattern": "at + time",
+          "rule": "Exact time",
+          "example": "The class starts at 10 AM."
+        },
+        {
+          "id": 18,
+          "pattern": "to + destination",
+          "rule": "Movement direction",
+          "example": "She went to school."
+        },
+        {
+          "id": 19,
+          "pattern": "for + duration",
+          "rule": "Length of time",
+          "example": "He studied for two hours."
+        },
+        {
+          "id": 20,
+          "pattern": "since + point of time",
+          "rule": "Starting point",
+          "example": "She has lived here since 2010."
+        }
+      ]
+    },
+    {
+      "topic": "Sentence Structure",
+      "title": "Learn to build complex sentences correctly",
+      "patterns": [
+        {
+          "id": 21,
+          "pattern": "Subject + Verb + Object",
+          "type": "Simple Sentence",
+          "example": "She reads books."
+        },
+        {
+          "id": 22,
+          "pattern": "Subject + Verb + Object + Extension",
+          "type": "Expanded sentence",
+          "example": "She reads books every day."
+        },
+        {
+          "id": 23,
+          "pattern": "Clause + conjunction + clause",
+          "type": "Compound sentence",
+          "example": "She studied hard and she passed."
+        },
+        {
+          "id": 24,
+          "pattern": "Main clause + subordinate clause",
+          "type": "Complex sentence",
+          "example": "She passed because she studied."
+        },
+        {
+          "id": 25,
+          "pattern": "If + clause, main clause",
+          "type": "Conditional sentence",
+          "example": "If you study, you will pass."
+        },
+        {
+          "id": 26,
+          "pattern": "Although + clause, main clause",
+          "type": "Contrast sentence",
+          "example": "Although it rained, we went out."
+        },
+        {
+          "id": 27,
+          "pattern": "Relative pronoun (who/which/that)",
+          "type": "Relative clause",
+          "example": "The boy who is playing is my brother."
+        },
+        {
+          "id": 28,
+          "pattern": "Too + adjective + to + verb",
+          "type": "Infinitive structure",
+          "example": "He is too tired to work."
+        },
+        {
+          "id": 29,
+          "pattern": "Enough + noun / adjective + enough",
+          "type": "Degree structure",
+          "example": "She is old enough to vote."
+        },
+        {
+          "id": 30,
+          "pattern": "So...that",
+          "type": "Result clause",
+          "example": "He was so tired that he slept early."
+        }
+      ]
+    }
+  ]
+}
