@@ -10,8 +10,8 @@ export default function Practice() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
         
-        <div className="space-y-1 mt-4">
-          <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Sentence Practice</h1>
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Sentence Practice</h1>
           <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">Improve Your Writing with Interactive Exercise.</p>
         </div>
 
@@ -19,14 +19,14 @@ export default function Practice() {
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
                 <Book size={20} className="text-[#3AAAFF]" fill="#3AAAFF" />
-                <span className="text-[18px] font-black text-black dark:text-[#F3F4F6]">36 Lesson</span>
+                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">36 Lesson</span>
              </div>
              <span className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-bold uppercase tracking-tight">Total Practiced</span>
           </div>
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
                 <BarChart size={20} className="text-[#8A56A4]" fill="#8A56A4" />
-                <span className="text-[18px] font-black text-black dark:text-[#F3F4F6]">88%</span>
+                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">88%</span>
              </div>
              <span className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-bold uppercase tracking-tight">Average Accuracy</span>
           </div>
@@ -39,7 +39,7 @@ export default function Practice() {
 
             <div className="space-y-4 w-full">
                 <p className="text-[16px] text-black dark:text-[#F3F4F6] font-black uppercase tracking-wider opacity-60">Question</p>
-                <h3 className="text-[24px] font-black leading-tight text-black dark:text-[#F3F4F6]">
+                <h3 className="text-[20px] sm:text-[24px] font-black leading-tight text-black dark:text-[#F3F4F6]">
                     She don&apos;t like playing tennis.
                 </h3>
             </div>
@@ -52,14 +52,14 @@ export default function Practice() {
                     placeholder="Type Your Answer Here..."
                     className="w-full h-[64px] bg-[#F3EEF6] dark:bg-[#0F0A15] border-2 border-[#E8DDED] dark:border-[#2D2438] rounded-[24px] px-6 text-center text-[16px] font-bold text-[#8A56A4] dark:text-[#A87BC7] outline-none placeholder:text-[#B7BBC3] dark:placeholder:text-[#3D334D] focus:border-[#8A56A4]"
                 />
-                <button className="w-full h-[64px] bg-[#8A56A4] text-white rounded-[24px] text-[18px] font-bold shadow-lg shadow-purple-200 dark:shadow-none active:scale-95 transition-transform">
+                <button className="w-full h-[64px] bg-[#8A56A4] text-white rounded-[24px] text-base sm:text-[18px] font-bold shadow-lg shadow-purple-200 dark:shadow-none active:scale-95 transition-transform">
                     Check Answer
                 </button>
             </div>
         </div>
 
         <div className="space-y-4 pb-4">
-            <h3 className="text-[20px] font-black px-2 text-black dark:text-[#F3F4F6]">Practice Exercises</h3>
+            <h3 className="text-lg sm:text-[20px] font-black px-2 text-black dark:text-[#F3F4F6]">Practice Exercises</h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <ExerciseCategory 

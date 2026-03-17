@@ -2,7 +2,7 @@ import Rewards from "@/components/Rewards";
 
 export default function RewardsPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pb-24 pt-4">
+    <main className="min-h-screen">
       <Rewards />
     </main>
   );

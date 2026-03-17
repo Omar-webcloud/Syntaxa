@@ -85,8 +85,8 @@ export default function Dictionary() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
         
-        <div className="space-y-1 mt-4">
-          <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Dictionary</h1>
+        <div className="space-y-1">
+          <h1 className="text-[20px] sm:text-3xl font-bold sm:font-extrabold text-[#111] dark:text-[#F3F4F6]">Dictionary</h1>
           <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">From English to Bangla</p>
         </div>
 
@@ -98,7 +98,7 @@ export default function Dictionary() {
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="Search an English word..."
-                    className="w-full h-[60px] bg-white dark:bg-[#1C1625] rounded-[24px] px-6 pr-12 text-[18px] font-medium shadow-sm border border-transparent dark:border-[#2D2438] focus:border-[#8A56A4] outline-none text-black dark:text-[#F3F4F6]"
+                    className="w-full h-[60px] bg-white dark:bg-[#1C1625] rounded-[24px] px-6 pr-12 text-base sm:text-[18px] font-medium shadow-sm border border-transparent dark:border-[#2D2438] focus:border-[#8A56A4] outline-none text-black dark:text-[#F3F4F6]"
                 />
                 {query && (
                     <button 
@@ -127,15 +127,15 @@ export default function Dictionary() {
         {result && (
             <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
                 <div className="space-y-1">
-                    <h2 className="text-3xl font-black text-[#8A56A4] dark:text-[#A87BC7]">{result.bn}</h2>
-                    <p className="text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">
+                    <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">{result.bn}</h2>
+                    <p className="text-base sm:text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">
                         {result.pron && result.pron.length > 0 ? `/${result.pron[0]}/` : result.en}
                     </p>
                 </div>
 
                 <div className="space-y-4">
                     {result.en_syns && result.en_syns.length > 0 && (
-                        <p className="text-[18px] font-bold leading-snug text-black dark:text-[#F3F4F6]">
+                        <p className="text-base sm:text-[18px] font-bold leading-snug text-black dark:text-[#F3F4F6]">
                             Synonyms: {result.en_syns.slice(0, 3).join(", ")}
                         </p>
                     )}
@@ -162,22 +162,22 @@ export default function Dictionary() {
 
         {wordOfDay && !result && (
             <div className="space-y-4">
-                <h3 className="text-[20px] font-black px-2 dark:text-[#F3F4F6] text-black">Word of The Day</h3>
+                <h3 className="text-lg sm:text-[20px] font-black px-2 dark:text-[#F3F4F6] text-black">Word of The Day</h3>
                 
                 <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
                     <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                            <h2 className="text-3xl font-black text-black dark:text-[#F3F4F6]">{wordOfDay.en}</h2>
-                            <p className="text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">
+                            <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-black dark:text-[#F3F4F6]">{wordOfDay.en}</h2>
+                            <p className="text-base sm:text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">
                                 {wordOfDay.pron && wordOfDay.pron.length > 0 ? `/${wordOfDay.pron[0]}/` : ""}
                             </p>
                         </div>
-                        <span className="text-2xl font-black text-[#8A56A4] dark:text-[#A87BC7]">{wordOfDay.bn}</span>
+                        <span className="text-[20px] sm:text-2xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">{wordOfDay.bn}</span>
                     </div>
 
                     <div className="space-y-4">
                         {wordOfDay.en_syns && wordOfDay.en_syns.length > 0 && (
-                            <p className="text-[18px] font-bold leading-snug text-black dark:text-[#F3F4F6]">
+                            <p className="text-base sm:text-[18px] font-bold leading-snug text-black dark:text-[#F3F4F6]">
                                 {wordOfDay.en_syns[0]}
                             </p>
                         )}

@@ -9,10 +9,10 @@ export default function Rewards() {
 
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
-      <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-8">
+      <div className="w-full max-w-[412px] md:max-w-[768px] p-4 sm:p-6 space-y-6 sm:space-y-8">
         
         <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">My Rewards</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">My Rewards</h1>
           <p className="text-gray-500 dark:text-[#9CA3AF] font-medium tracking-tight">Keep Your Streak Alive to Earn More</p>
         </div>
 
@@ -33,24 +33,24 @@ export default function Rewards() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#1C1625] rounded-[32px] p-6 shadow-md border border-gray-50 dark:border-[#2D2438]">
-            <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-[18px] mb-6 px-1">Weekly Streak</h3>
+        <div className="bg-white dark:bg-[#1C1625] rounded-[24px] sm:rounded-[32px] p-4 sm:p-6 shadow-md border border-gray-50 dark:border-[#2D2438]">
+            <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-base sm:text-[18px] mb-4 sm:mb-6 px-1">Weekly Streak</h3>
             
-            <div className="flex justify-between items-center mb-8 px-2">
+            <div className="flex justify-between items-center mb-6 sm:mb-8 w-full">
                 {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => {
                     const active = i < STREAK;
                     return (
-                        <div key={i} className="flex flex-col items-center gap-2">
+                        <div key={i} className="flex flex-col items-center gap-1.5 sm:gap-2">
                             <div className={cn(
-                                "w-11 h-11 rounded-full flex items-center justify-center transition-all",
+                                "w-8 h-8 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all",
                                 active 
                                   ? "bg-[#FC9502] text-white shadow-md" 
                                   : "bg-[#B7BBC3] text-gray-500"
                             )}>
-                                {active ? <Check size={24} strokeWidth={4} /> : null}
+                                {active ? <Check className="w-4 h-4 sm:w-6 sm:h-6" strokeWidth={4} /> : null}
                             </div>
                             <span className={cn(
-                                "text-[14px] font-bold",
+                                "text-[11px] sm:text-[14px] font-bold",
                                 active ? "text-black dark:text-[#F3F4F6]" : "text-gray-400 dark:text-[#3D334D]"
                             )}>{day}</span>
                         </div>
@@ -68,7 +68,7 @@ export default function Rewards() {
 
         <div className="space-y-4">
             <div className="flex justify-between items-center px-1">
-                <h3 className="font-extrabold text-black dark:text-white text-[20px]">Achievements</h3>
+                <h3 className="font-extrabold text-black dark:text-white text-lg sm:text-[20px]">Achievements</h3>
                 <button className="text-[14px] font-bold text-gray-400 dark:text-gray-500">View All</button>
             </div>
 
@@ -103,7 +103,7 @@ export default function Rewards() {
         </div>
 
         <div className="space-y-4">
-            <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-[20px] px-1">Redeem Your Gems</h3>
+            <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-lg sm:text-[20px] px-1">Redeem Your Gems</h3>
             <div className="grid grid-cols-2 gap-4">
                  <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center gap-3 border border-gray-50 dark:border-[#2D2438]">
                      <div className="w-12 h-12 bg-gray-100 dark:bg-[#2D2438] rounded-full flex items-center justify-center overflow-hidden">
@@ -151,7 +151,7 @@ function AchievementCard({
             </div>
             <div className="flex-1 space-y-1">
                 <div className="flex justify-between items-center pr-4">
-                    <h4 className={cn("text-[16px] font-extrabold", locked ? "text-gray-400 dark:text-[#3D334D]" : "text-black dark:text-[#F3F4F6]")}>{title}</h4>
+                    <h4 className={cn("text-[14px] sm:text-[16px] font-extrabold", locked ? "text-gray-400 dark:text-[#3D334D]" : "text-black dark:text-[#F3F4F6]")}>{title}</h4>
                     {statusText && <span className="text-[11px] font-bold text-green-600 dark:text-green-500">{statusText}</span>}
                 </div>
                 <p className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-medium leading-tight mr-4">{desc}</p>

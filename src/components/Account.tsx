@@ -33,9 +33,7 @@ export default function Account() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex justify-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 flex flex-col items-center">
         
-        <div className="h-10 w-full" />
-
-        <div className="relative mt-4">
+        <div className="relative">
           <div className="w-[140px] h-[140px] rounded-[16px] overflow-hidden bg-[#E5CCFA] border-4 border-white dark:border-[#2D2438] shadow-sm flex items-center justify-center">
             <Image 
               src={USER.avatar} 
@@ -52,7 +50,7 @@ export default function Account() {
         </div>
 
         {/* User Name */}
-        <h1 className="mt-6 text-[24px] font-bold">{USER.name}</h1>
+        <h1 className="mt-6 text-xl sm:text-[24px] font-bold">{USER.name}</h1>
 
         <div className="mt-10 w-full grid grid-cols-2 md:grid-cols-4 gap-[12px]">
             <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
@@ -61,7 +59,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Quiz</span>
-                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.quizzes}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.quizzes}</span>
                 </div>
             </div>
 
@@ -71,7 +69,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Streak</span>
-                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.streak} Days</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.streak} Days</span>
                 </div>
             </div>
 
@@ -81,7 +79,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Gem</span>
-                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.gems}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.gems}</span>
                 </div>
             </div>
 
@@ -91,13 +89,13 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Time Spent</span>
-                    <span className="text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.timeSpent}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.timeSpent}</span>
                 </div>
             </div>
         </div>
 
         <div className="mt-8 w-full text-left">
-           <h2 className="text-[18px] font-bold px-2">Settings</h2>
+           <h2 className="text-base sm:text-[18px] font-bold px-2">Settings</h2>
         </div>
 
         <div className="mt-4 w-full bg-[#E8DDED] dark:bg-[#1C1625] rounded-[24px] p-[16px] flex flex-col gap-[12px] border border-transparent dark:border-[#2D2438]">
