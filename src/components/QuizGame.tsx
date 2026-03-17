@@ -176,7 +176,7 @@ export default function QuizGame() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {currentQ.options.map((option, idx) => {
-                            let optionClass = "border-[#E8DDED] dark:border-[#2D2438] text-[#B7BBC3] dark:text-[#3D334D] bg-transparent";
+                            let optionClass = "border-[#E8DDED] dark:border-[#2D2438] text-black dark:text-white bg-transparent";
                             
                             if (feedback === null) {
                                 if (selectedOption === idx) {

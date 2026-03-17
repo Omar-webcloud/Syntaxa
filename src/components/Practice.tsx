@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Book, BarChart, Lightbulb, Type, Layers, Layout, CheckCircle, XCircle, ArrowRight, X } from "lucide-react";
+import { BarChart, Lightbulb, Type, Layers, Layout, CheckCircle, XCircle, ArrowRight, X } from "lucide-react";
 import sentencesData from "@/data/practice-sentence.json";
 import lessonsData from "@/data/lesson.json";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type LessonPattern = {
   id: number;
@@ -65,25 +66,15 @@ export default function Practice() {
 
     const currentSentence = sentencesData[currentSentenceIndex];
     
-    // Normalize string: lowercase, completely remove punctuation (like commas, full stops), and ignore extra spaces
     const normalize = (str: string) => str.toLowerCase().replace(/[.,?!]/g, '').replace(/\s+/g, ' ').trim();
     const cleanAnswer = currentSentence.answer.replace(/\*\*/g, '');
     
-    // Look for the missing word in the question (e.g. from "She ___ (go) to school")
-    // or just checking if their input matches the word that is different between question & answer.
-    // An easier way: check if they typed the full cleanAnswer, OR if what they typed is explicitly included in the answer but not in the question.
-    // Better yet: let's see if their input perfectly matches the word enclosed in ** (if any) or (parentheses).
     let targetWord = "";
     
-    // if the json uses **word**, try extracting that
     const boldMatch = currentSentence.answer.match(/\*\*(.*?)\*\*/);
     if (boldMatch) {
         targetWord = boldMatch[1];
     } else {
-        // If no bold match, we have to deduce the word.
-        // Let's grab the word from the parentheses in the question, e.g., "(go)", and assume the answer is simply the user typing the conjugated form.
-        // Wait, the correct word is not always the parenthesis word. In "She goes to school", the word is "goes".
-        // Let's just do a diff between normalize(question without `___ (word)`) and normalize(answer).
         const questionParts = normalize(currentSentence.question.replace(/___.*?\(.*?\)|___/g, '')).split(' ');
         const answerParts = normalize(cleanAnswer).split(' ');
         const diffWords = answerParts.filter((word: string) => !questionParts.includes(word));
@@ -121,17 +112,17 @@ export default function Practice() {
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
-                <Book size={20} className="text-[#3AAAFF]" fill="#3AAAFF" />
-                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">{totalPracticed} Sentences</span>
+                <Image src="/book.svg" alt="Book" width={16} height={16} className="w-[16px] h-[16px] object-contain" />
+                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">{totalPracticed} Lesson</span>
              </div>
-             <span className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-bold uppercase tracking-tight">Total Practiced</span>
+             <span className="text-[13px] text-[#000000] dark:text-[#9CA3AF] uppercase tracking-tight">Total Practiced</span>
           </div>
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
-                <BarChart size={20} className="text-[#8A56A4]" fill="#8A56A4" />
+                <BarChart size={16} className="text-[#8A56A4]" fill="#8A56A4" />
                 <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">{accuracy}%</span>
              </div>
-             <span className="text-[13px] text-gray-400 dark:text-[#9CA3AF] font-bold uppercase tracking-tight">Average Accuracy</span>
+             <span className="text-[13px] text-[#000000] dark:text-[#9CA3AF] uppercase tracking-tight">Average Accuracy</span>
           </div>
         </div>
 
@@ -232,7 +223,7 @@ export default function Practice() {
       </div>
 
       {selectedLesson && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-6 transition-all">
+        <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-6 transition-all">
             <div className="w-full max-w-[412px] md:max-w-[768px] bg-white dark:bg-[#1C1625] h-[85vh] sm:h-[80vh] rounded-t-[32px] sm:rounded-[32px] flex flex-col shadow-2xl animate-in fade-in slide-in-from-bottom-10 duration-300">
                 <div className="p-6 border-b border-gray-100 dark:border-[#2D2438] flex justify-between items-center shrink-0">
                     <div className="space-y-1">
@@ -247,7 +238,7 @@ export default function Practice() {
                     </button>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto p-6 pb-24 space-y-4">
                     {selectedLesson.patterns.map((pattern: LessonPattern) => (
                         <div key={pattern.id} className="bg-[#F3EEF6] dark:bg-[#0F0A15] border border-[#E8DDED] dark:border-[#2D2438] p-5 rounded-[24px] space-y-3">
                             <div className="flex justify-between items-start gap-4">

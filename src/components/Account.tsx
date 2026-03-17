@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, Trophy, Target, Flame, Clock } from "lucide-react";
+import { Trophy, Target, Flame, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
@@ -44,12 +44,11 @@ export default function Account() {
               unoptimized
             />
           </div>
-          <div className="absolute -bottom-2 -right-2 w-[40px] h-[40px] rounded-full bg-[#E5CCFA] flex items-center justify-center border-2 border-white dark:border-[#2D2438] shadow-sm cursor-pointer hover:scale-110 transition-transform">
-             <Settings size={18} className="text-[#8A56A4]" />
+          <div className="absolute -bottom-2 -right-2 w-[40px] h-[40px] cursor-pointer hover:scale-110 transition-transform drop-shadow-sm rounded-full">
+             <Image src="/pen.svg" alt="Edit" width={40} height={40} className="w-full h-full object-cover rounded-full" />
           </div>
         </div>
 
-        {/* User Name */}
         <h1 className="mt-6 text-xl sm:text-[24px] font-bold">{USER.name}</h1>
 
         <div className="mt-10 w-full grid grid-cols-2 md:grid-cols-4 gap-[12px]">

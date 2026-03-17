@@ -36,13 +36,19 @@ export default function BottomNav() {
                 isActive ? "text-[#8A56A4] dark:text-[#A87BC7]" : "text-[#7F7F7F] dark:text-[#9CA3AF]"
               )}
             >
-              <Icon
-                size={24}
-                className={cn(
-                  "transition-all duration-200",
-                  isActive ? "fill-[#8A56A4]" : ""
-                )}
-              />
+              <div className={cn(
+                "flex items-center justify-center w-12 h-8 rounded-full transition-all duration-300",
+                isActive ? "bg-[#8A56A4]" : "bg-transparent"
+              )}>
+                <Icon
+                  size={20}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  className={cn(
+                    "transition-all duration-300",
+                    isActive ? "stroke-white dark:stroke-white" : "stroke-current"
+                  )}
+                />
+              </div>
               <span className={cn(
                 "text-[12px]",
                 isActive ? "font-semibold dark:font-bold" : "font-normal"

@@ -29,7 +29,7 @@ export default function Dictionary() {
         const data = await response.json();
         setDictionary(data);
         
-        // Select a random "Word of the Day"
+
         if (data.length > 0) {
           const randomIndex = Math.floor(Math.random() * data.length);
           setWordOfDay(data[randomIndex]);
@@ -68,7 +68,7 @@ export default function Dictionary() {
         const audio = new Audio(audioUrl);
         audio.play();
       } else {
-        // Fallback to Web Speech API
+
         const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = 'en-US';
         window.speechSynthesis.speak(utterance);
@@ -162,7 +162,7 @@ export default function Dictionary() {
 
         {wordOfDay && !result && (
             <div className="space-y-4">
-                <h3 className="text-lg sm:text-[20px] font-black px-2 dark:text-[#F3F4F6] text-black">Word of The Day</h3>
+                <h3 className="text-base sm:text-lg font-semibold px-2 dark:text-[#F3F4F6] text-black">Word of The Day</h3>
                 
                 <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
                     <div className="flex justify-between items-start">
