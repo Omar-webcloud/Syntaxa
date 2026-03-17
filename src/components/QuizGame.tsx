@@ -20,6 +20,7 @@ export default function QuizGame() {
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [quizFinished, setQuizFinished] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const MAX_QUESTIONS = 10;
 
@@ -67,10 +68,40 @@ export default function QuizGame() {
   };
 
   useEffect(() => {
+    setMounted(true);
+    const savedState = localStorage.getItem("syntaxa_quiz_state");
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        setQuestions(parsed.questions);
+        setCurrentQuestionIndex(parsed.currentQuestionIndex);
+        setScore(parsed.score);
+        setSelectedOption(parsed.selectedOption);
+        setFeedback(parsed.feedback);
+        setQuizFinished(parsed.quizFinished);
+        return;
+      } catch (e) {
+         console.error(e);
+      }
+    }
+    
     initQuiz();
   }, []);
 
-  if (questions.length === 0) return null;
+  useEffect(() => {
+    if (mounted && questions.length > 0) {
+      localStorage.setItem("syntaxa_quiz_state", JSON.stringify({
+        questions,
+        currentQuestionIndex,
+        score,
+        selectedOption,
+        feedback,
+        quizFinished
+      }));
+    }
+  }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted]);
+
+  if (!mounted || questions.length === 0) return null;
 
   const currentQ = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / MAX_QUESTIONS) * 100;

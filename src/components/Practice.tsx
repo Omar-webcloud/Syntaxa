@@ -40,8 +40,20 @@ export default function Practice() {
 
   useEffect(() => {
     setMounted(true);
+    const storedTotal = localStorage.getItem("syntaxa_practiced_total");
+    const storedCorrect = localStorage.getItem("syntaxa_practiced_correct");
+    if (storedTotal) setTotalPracticed(parseInt(storedTotal, 10));
+    if (storedCorrect) setCorrectCount(parseInt(storedCorrect, 10));
+    
     pickRandomSentence();
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem("syntaxa_practiced_total", totalPracticed.toString());
+      localStorage.setItem("syntaxa_practiced_correct", correctCount.toString());
+    }
+  }, [totalPracticed, correctCount, mounted]);
 
   const handleCheckAnswer = () => {
     if (feedback !== null) {
@@ -53,10 +65,35 @@ export default function Practice() {
 
     const currentSentence = sentencesData[currentSentenceIndex];
     
-    // Normalize string: lowercase, keep only letters and numbers
-    const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Normalize string: lowercase, completely remove punctuation (like commas, full stops), and ignore extra spaces
+    const normalize = (str: string) => str.toLowerCase().replace(/[.,?!]/g, '').replace(/\s+/g, ' ').trim();
     const cleanAnswer = currentSentence.answer.replace(/\*\*/g, '');
-    const isCorrect = normalize(userInput) === normalize(cleanAnswer);
+    
+    // Look for the missing word in the question (e.g. from "She ___ (go) to school")
+    // or just checking if their input matches the word that is different between question & answer.
+    // An easier way: check if they typed the full cleanAnswer, OR if what they typed is explicitly included in the answer but not in the question.
+    // Better yet: let's see if their input perfectly matches the word enclosed in ** (if any) or (parentheses).
+    let targetWord = "";
+    
+    // if the json uses **word**, try extracting that
+    const boldMatch = currentSentence.answer.match(/\*\*(.*?)\*\*/);
+    if (boldMatch) {
+        targetWord = boldMatch[1];
+    } else {
+        // If no bold match, we have to deduce the word.
+        // Let's grab the word from the parentheses in the question, e.g., "(go)", and assume the answer is simply the user typing the conjugated form.
+        // Wait, the correct word is not always the parenthesis word. In "She goes to school", the word is "goes".
+        // Let's just do a diff between normalize(question without `___ (word)`) and normalize(answer).
+        const questionParts = normalize(currentSentence.question.replace(/___.*?\(.*?\)|___/g, '')).split(' ');
+        const answerParts = normalize(cleanAnswer).split(' ');
+        const diffWords = answerParts.filter((word: string) => !questionParts.includes(word));
+        if (diffWords.length > 0) {
+            targetWord = diffWords.join(' ');
+        }
+    }
+
+    const normInput = normalize(userInput);
+    const isCorrect = normInput === normalize(cleanAnswer) || (targetWord && normInput === normalize(targetWord));
     
     setTotalPracticed(prev => prev + 1);
     if (isCorrect) {
