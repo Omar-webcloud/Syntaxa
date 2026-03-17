@@ -7,6 +7,9 @@ const outfit = Outfit({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Syntaxa Grammar Quiz",
   description: "Master English grammar with daily quizzes and gamified learning.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 import BottomNav from "@/components/BottomNav";
