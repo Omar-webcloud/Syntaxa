@@ -127,7 +127,7 @@ export default function Practice() {
         </div>
 
         <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438] flex flex-col items-center text-center">
-            <span className="bg-[#48CAFB] text-white text-[13px] font-black px-4 py-1.5 rounded-[10px]">
+            <span className="bg-transparent text-black dark:text-white border-2 border-black dark:border-white text-[13px] font-black px-4 py-1.5 rounded-[10px] uppercase tracking-wide">
                 Correct The Sentence
             </span>
 
@@ -148,7 +148,7 @@ export default function Practice() {
                         disabled={feedback !== null}
                         placeholder="Type Your Answer Here..."
                         className={cn(
-                          "w-full h-[64px] bg-[#F3EEF6] dark:bg-[#0F0A15] border-2 rounded-[24px] px-6 pr-12 text-center text-[16px] font-bold outline-none placeholder:text-[#B7BBC3] dark:placeholder:text-[#3D334D] transition-colors",
+                          "w-full h-[64px] bg-[#F3EEF6] dark:bg-[#0F0A15] border-2 rounded-[24px] px-6 pr-12 text-center text-[16px] font-bold outline-none transition-colors",
                           feedback === "correct" 
                             ? "border-green-500 text-green-600 dark:text-green-500 bg-green-50 dark:bg-green-950/20" 
                             : feedback === "incorrect"

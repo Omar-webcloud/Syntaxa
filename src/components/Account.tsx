@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function Account() {
   const { theme, setTheme } = useTheme();
   const [reminderActive, setReminderActive] = useState(true);
   const [soundActive, setSoundActive] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -18,8 +20,7 @@ export default function Account() {
 
   if (!mounted) return null;
 
-  const USER = {
-    name: "Abul Hayat",
+  const USER_STATS = {
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sheba",
     stats: {
       quizzes: 46,
@@ -36,7 +37,7 @@ export default function Account() {
         <div className="relative">
           <div className="w-[140px] h-[140px] rounded-[16px] overflow-hidden bg-[#E5CCFA] border-4 border-white dark:border-[#2D2438] shadow-sm flex items-center justify-center">
             <Image 
-              src={USER.avatar} 
+              src={USER_STATS.avatar} 
               alt="Avatar" 
               width={140}
               height={140}
@@ -49,7 +50,7 @@ export default function Account() {
           </div>
         </div>
 
-        <h1 className="mt-6 text-xl sm:text-[24px] font-bold">{USER.name}</h1>
+        <h1 className="mt-6 text-xl sm:text-[24px] font-bold">{user?.username || "Guest User"}</h1>
 
         <div className="mt-10 w-full grid grid-cols-2 md:grid-cols-4 gap-[12px]">
             <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
@@ -58,7 +59,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Quiz</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.quizzes}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.quizzes}</span>
                 </div>
             </div>
 
@@ -68,7 +69,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Streak</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.streak} Days</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.streak} Days</span>
                 </div>
             </div>
 
@@ -78,7 +79,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Gem</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.gems}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.gems}</span>
                 </div>
             </div>
 
@@ -88,7 +89,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Time Spent</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER.stats.timeSpent}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.timeSpent}</span>
                 </div>
             </div>
         </div>
@@ -116,7 +117,10 @@ export default function Account() {
         </div>
 
         <div className="mt-4 w-full">
-             <button className="w-full h-[51px] bg-white dark:bg-[#1C1625] rounded-[16px] flex items-center justify-center shadow-sm border border-transparent dark:border-[#2D2438] active:scale-95 transition-transform">
+             <button 
+                onClick={logout}
+                className="w-full h-[51px] bg-white dark:bg-[#1C1625] rounded-[16px] flex items-center justify-center shadow-sm border border-transparent dark:border-[#2D2438] active:scale-95 transition-transform"
+             >
                  <span className="text-[16px] font-bold text-[#D00000] dark:text-[#FF4D4D]">Log Out</span>
              </button>
         </div>

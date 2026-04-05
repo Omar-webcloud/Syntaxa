@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, XCircle, ArrowRight, RotateCcw } from "lucide-react";
 import quizData from "@/data/quiz.json";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/AuthContext";
 
 type QuizQuestion = {
   id: number;
@@ -14,6 +15,7 @@ type QuizQuestion = {
 };
 
 export default function QuizGame() {
+  const { user, isAuthenticated } = useAuth();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -133,7 +135,9 @@ export default function QuizGame() {
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
         
         <div className="space-y-1">
-          <p className="text-base sm:text-[18px] font-semibold text-[#111] dark:text-[#9CA3AF] opacity-80">Welcome Back Abul Hayat!</p>
+          <p className="text-base sm:text-[18px] font-semibold text-[#111] dark:text-[#9CA3AF] opacity-80">
+            Welcome {isAuthenticated ? `Back, ${user?.username}!` : "to Syntaxa!"}
+          </p>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Your Daily Quiz</h1>
         </div>
 
