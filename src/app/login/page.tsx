@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] flex items-center justify-center p-4 transition-colors duration-300">
+    <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] flex items-center justify-center p-4 transition-colors duration-300 relative">
+      <Link 
+        href="/" 
+        className="absolute top-6 left-6 p-2 rounded-full bg-white dark:bg-[#1C1625] shadow-md hover:scale-110 active:scale-95 transition-all group"
+      >
+        <ArrowLeft className="text-[#8A56A4] dark:text-[#A87BC7] group-hover:stroke-[3px] transition-all" size={24} />
+      </Link>
+
       <div className="w-full max-w-sm space-y-8">
          <div className="text-center space-y-2">
              <div className="w-16 h-16 bg-[#8A56A4] rounded-2xl mx-auto flex items-center justify-center shadow-lg transform -rotate-3 mb-4">
@@ -90,7 +97,7 @@ export default function Login() {
                     type="submit"
                     disabled={loading}
                     className={cn(
-                        "w-full py-4 bg-[#8A56A4] text-white rounded-2xl font-black shadow-lg shadow-purple-100 dark:shadow-none hover:bg-[#7D4D95] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2",
+                        "w-full py-3.5 sm:py-4 bg-[#8A56A4] text-white rounded-2xl font-black shadow-lg shadow-purple-100 dark:shadow-none hover:bg-[#7D4D95] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2 text-sm sm:text-base",
                         loading && "opacity-70 cursor-not-allowed"
                     )}
                  >

@@ -37,8 +37,8 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
         </div>
         {!isAuthenticated && (
           <div className="flex gap-2">
-            <Link href="/login" className="px-4 py-2 rounded-full border border-[#8A56A4] text-[#8A56A4] text-sm font-bold">Sign Up</Link>
-            <Link href="/login" className="px-4 py-2 rounded-full bg-[#8A56A4] text-white text-sm font-bold">Log In</Link>
+            <Link href="/signup" className="px-1 py-1 min-[353px]:px-3 min-[353px]:py-1.5 min-[400px]:px-4 min-[400px]:py-2 rounded border border-[#8A56A4] text-[#8A56A4] text-xs min-[400px]:text-sm font-bold">Sign Up</Link>
+            <Link href="/login" className="px-1 py-1 min-[353px]:px-3 min-[353px]:py-1.5 min-[400px]:px-2 min-[400px]:py-2 rounded bg-[#8A56A4] text-white text-xs min-[400px]:text-sm font-semibold">Log In</Link>
           </div>
         )}
       </div>
