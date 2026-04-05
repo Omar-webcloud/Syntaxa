@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = (username: string, password: string) => {
-    if (username === "Guest" && password === "123") {
+    if (username.trim().length > 0 && password.trim().length > 0) {
       const newUser = { username };
       setUser(newUser);
       localStorage.setItem("syntaxa_user", JSON.stringify(newUser));

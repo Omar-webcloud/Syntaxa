@@ -36,13 +36,17 @@ export default function Login() {
       <div className="w-full max-w-sm space-y-8">
          <div className="text-center space-y-2">
              <div className="w-16 h-16 bg-[#8A56A4] rounded-2xl mx-auto flex items-center justify-center shadow-lg transform -rotate-3 mb-4">
-                 <span className="text-3xl font-black">🧩</span>
+                 <span className="text-3xl font-black text-white">🧩</span>
              </div>
              <h1 className="text-3xl font-black text-gray-900 dark:text-white">Welcome Back!</h1>
-             <p className="text-gray-500 dark:text-gray-400 font-medium">Log in to sync your progress & streaks.</p>
+             <p className="text-gray-500 dark:text-gray-400 font-medium">Log in with any username to continue.</p>
          </div>
 
-         <div className="bg-white dark:bg-[#1C1625] p-8 rounded-[32px] shadow-xl border border-gray-100 dark:border-[#2D2438] space-y-6 transition-colors duration-300">
+         <div className="bg-white dark:bg-[#1C1625] p-8 rounded-[32px] shadow-xl border border-gray-100 dark:border-[#2D2438] space-y-6 transition-colors duration-300 relative">
+             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg uppercase tracking-widest whitespace-nowrap">
+                 Anything works for now!
+             </div>
+
              <form onSubmit={handleSubmit} className="space-y-4">
                  {error && (
                      <div className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-sm p-4 rounded-2xl font-bold text-center border border-red-100 dark:border-red-900/30">
@@ -56,7 +60,7 @@ export default function Login() {
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Guest"
+                            placeholder="Enter any name..."
                             className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-[#0F0A15] border-2 border-gray-100 dark:border-[#2D2438] text-gray-900 dark:text-white focus:border-[#8A56A4] dark:focus:border-[#A87BC7] outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600 font-bold"
                             required
                          />
@@ -70,7 +74,7 @@ export default function Login() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="123"
+                            placeholder="••••••••"
                             className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-[#0F0A15] border-2 border-gray-100 dark:border-[#2D2438] text-gray-900 dark:text-white focus:border-[#8A56A4] dark:focus:border-[#A87BC7] outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600 font-bold"
                             required
                          />
