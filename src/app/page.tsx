@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {showQuiz ? (
-        <QuizGame />
+        <QuizGame onBack={() => setShowQuiz(false)} />
       ) : (
         <Dashboard onStartQuiz={() => setShowQuiz(true)} />
       )}

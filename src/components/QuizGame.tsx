@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, XCircle, ArrowRight, RotateCcw } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight, RotateCcw, ArrowLeft } from "lucide-react";
 import quizData from "@/data/quiz.json";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
@@ -14,7 +14,11 @@ type QuizQuestion = {
   answer: string;
 };
 
-export default function QuizGame() {
+interface QuizGameProps {
+  onBack: () => void;
+}
+
+export default function QuizGame({ onBack }: QuizGameProps) {
   const { user, isAuthenticated } = useAuth();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -134,6 +138,13 @@ export default function QuizGame() {
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
         
+        <button 
+          onClick={onBack}
+          className="w-10 h-10 rounded-full bg-white dark:bg-[#1C1625] flex items-center justify-center shadow-sm border border-gray-100 dark:border-[#2D2438] active:scale-95 transition-all mb-2"
+        >
+          <ArrowLeft size={20} className="text-[#8A56A4] dark:text-[#A87BC7]" />
+        </button>
+
         <div className="space-y-1">
           <p className="text-base sm:text-[18px] font-semibold text-[#111] dark:text-[#9CA3AF] opacity-80">
             Welcome {isAuthenticated ? `Back, ${user?.username}!` : "to Syntaxa!"}
@@ -266,12 +277,21 @@ export default function QuizGame() {
                     Accuracy: {Math.round((score / MAX_QUESTIONS) * 100)}%
                 </div>
 
-                <button 
-                    onClick={initQuiz}
-                    className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-base sm:text-[18px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-purple-200 dark:shadow-none"
-                >
-                    <RotateCcw size={20} /> Play Again
-                </button>
+                <div className="space-y-3">
+                    <button 
+                        onClick={initQuiz}
+                        className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-base sm:text-[18px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-purple-200 dark:shadow-none"
+                    >
+                        <RotateCcw size={20} /> Play Again
+                    </button>
+
+                    <button 
+                        onClick={onBack}
+                        className="w-full h-[60px] bg-transparent border-2 border-gray-100 dark:border-[#2D2438] text-gray-900 dark:text-white rounded-[24px] text-base sm:text-[18px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-gray-50 dark:hover:bg-[#2D2438]/50"
+                    >
+                        Back to Dashboard
+                    </button>
+                </div>
             </motion.div>
         )}
 
