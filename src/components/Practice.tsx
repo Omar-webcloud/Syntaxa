@@ -113,7 +113,7 @@ export default function Practice() {
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
                 <Image src="/book.svg" alt="Book" width={16} height={16} className="w-[16px] h-[16px] object-contain" />
-                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">{totalPracticed} Lesson</span>
+                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">{totalPracticed} {totalPracticed > 1 ? "Lessons" : "Lesson"}</span>
              </div>
              <span className="text-[13px] text-[#000000] dark:text-[#9CA3AF] uppercase tracking-tight">Total Practiced</span>
           </div>
@@ -127,7 +127,7 @@ export default function Practice() {
         </div>
 
         <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438] flex flex-col items-center text-center">
-            <span className="bg-transparent text-black dark:text-white border-2 border-black dark:border-white text-[13px] font-black px-4 py-1.5 rounded-[10px] uppercase tracking-wide">
+            <span className="bg-transparent text-[#8A56A4] dark:text-[#A87BC7]   dark:border-[#A87BC7] text-[13px] font-black px-4 py-1.5 rounded-[10px] uppercase tracking-wide">
                 Correct The Sentence
             </span>
 
@@ -278,7 +278,7 @@ function ExerciseCategory({ icon, title, desc, onClick }: { icon: React.ReactNod
                 {icon}
             </div>
             <div className="space-y-1">
-                <h4 className="text-[16px] font-black leading-tight text-black dark:text-[#F3F4F6]">{title}</h4>
+                <h4 className="text-[16px] font-semibold leading-tight text-black dark:text-[#F3F4F6]">{title}</h4>
                 <p className="text-[12px] text-gray-600 dark:text-[#9CA3AF] font-medium leading-tight">
                     {desc}
                 </p>

@@ -68,7 +68,7 @@ export default function Login() {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="Enter any name..."
-                            className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-[#0F0A15] border-2 border-gray-100 dark:border-[#2D2438] text-gray-900 dark:text-white focus:border-[#8A56A4] dark:focus:border-[#A87BC7] outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600 font-bold"
+                            className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-[#0F0A15] border-2 border-gray-100 dark:border-[#2D2438] text-gray-900 dark:text-white focus:border-[#8A56A4] dark:focus:border-[#A87BC7] outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
                             required
                          />
                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
@@ -82,7 +82,7 @@ export default function Login() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="••••••••"
-                            className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-[#0F0A15] border-2 border-gray-100 dark:border-[#2D2438] text-gray-900 dark:text-white focus:border-[#8A56A4] dark:focus:border-[#A87BC7] outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600 font-bold"
+                            className="w-full pl-10 pr-4 py-3.5 rounded-xl bg-gray-50 dark:bg-[#0F0A15] border-2 border-gray-100 dark:border-[#2D2438] text-gray-900 dark:text-white focus:border-[#8A56A4] dark:focus:border-[#A87BC7] outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
                             required
                          />
                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
