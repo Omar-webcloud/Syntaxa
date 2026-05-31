@@ -1,4 +1,4 @@
-# Syntaxa Grammar Quiz
+# Syntaxa Grammar Quiz Web-App
 
 Explore the live platform: [Syntaxa Web Application](https://syntaxa-ten.vercel.app/)
 
