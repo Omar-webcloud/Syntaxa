@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2, CheckCircle, AlertCircle, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { recordWritingCheck } from "@/lib/userStats";
 import type { CorrectWritingResponse, WritingIssue } from "@/lib/ai/types";
 
 export default function WritingCoach() {
@@ -29,6 +30,7 @@ export default function WritingCoach() {
       if (res.ok) {
         const data: CorrectWritingResponse = await res.json();
         setResult(data);
+        recordWritingCheck();
       } else {
         setError("AI is unavailable right now. Please try again later.");
       }

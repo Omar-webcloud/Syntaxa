@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Search, X, Loader2, Globe, BookOpen, Languages } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PronunciationButton from "@/components/PronunciationButton";
+import { recordDictionaryLookup } from "@/lib/userStats";
 import type { SimplifyDefinitionResponse, TranslateResponse } from "@/lib/ai/types";
 
 // ─── Types ─────────────────────────────────────────────────────────
@@ -300,6 +301,7 @@ export default function Dictionary() {
           break;
       }
       setResult(res);
+      recordDictionaryLookup();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed");
     } finally {

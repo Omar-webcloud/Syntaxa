@@ -2,10 +2,17 @@
 
 import { Check, Star, Lock, Lightbulb, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUserStats } from "@/lib/userStats";
 
 export default function Rewards() {
-  const GEMS = 124;
-  const STREAK = 5;
+  const { stats } = useUserStats();
+  const GEMS = stats.gems;
+  const STREAK = stats.streak;
+
+  const daysToReward = Math.max(1, 7 - (STREAK % 7));
+  const grammarMasterProgress = Math.min(100, Math.round((stats.practicedWords / 10) * 100));
+  const streakProgress = Math.min(100, Math.round((stats.streak / 7) * 100));
+  const lessonsProgress = Math.min(100, Math.round((stats.quizzesCompleted / 100) * 100));
 
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
@@ -38,14 +45,14 @@ export default function Rewards() {
             
             <div className="flex justify-between items-center mb-6 sm:mb-8 w-full">
                 {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => {
-                    const active = i < STREAK;
+                    const active = stats.weeklyActivity[i];
                     return (
                         <div key={i} className="flex flex-col items-center gap-1.5 sm:gap-2">
                             <div className={cn(
                                 "w-8 h-8 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all",
                                 active 
                                   ? "bg-[#FC9502] text-white shadow-md" 
-                                  : "bg-[#B7BBC3] text-gray-500"
+                                  : "bg-[#B7BBC3] dark:bg-[#2D2438] text-gray-500 dark:text-gray-400"
                             )}>
                                 {active ? <Check className="w-4 h-4 sm:w-6 sm:h-6" strokeWidth={4} /> : null}
                             </div>
@@ -61,7 +68,7 @@ export default function Rewards() {
             <div className="bg-[#FFF0DC] dark:bg-[#2C1F10] p-3 rounded-2xl flex items-center justify-center gap-2 border border-[#FFE0B2] dark:border-[#2D2438]">
                 <Star size={20} fill="#FC9502" className="text-[#FC9502]" />
                 <p className="text-[13px] text-black dark:text-[#F3F4F6] font-bold">
-                   2 Days Until Your Next Big Reward (+50) <span className="text-inherit">💎</span>
+                   {daysToReward} {daysToReward === 1 ? "Day" : "Days"} Until Your Next Big Reward (+50) <span className="text-inherit">💎</span>
                 </p>
             </div>
         </div>
@@ -69,34 +76,38 @@ export default function Rewards() {
         <div className="space-y-4">
             <div className="flex justify-between items-center px-1">
                 <h3 className="font-extrabold text-black dark:text-white text-lg sm:text-[20px]">Achievements</h3>
-                <button className="text-[14px] font-bold text-gray-400 dark:text-gray-500">View All</button>
+                <span className="text-[14px] font-bold text-[#8A56A4] dark:text-[#A87BC7]">
+                  {[grammarMasterProgress >= 100, streakProgress >= 100, lessonsProgress >= 100].filter(Boolean).length}/3 Unlocked
+                </span>
             </div>
 
             <div className="space-y-3">
                 <AchievementCard 
                     title="Grammar Master" 
-                    desc="Completed 10 basic grammar practices."
+                    desc="Complete 10 basic grammar sentence practices."
                     icon="📚"
-                    progress={100}
-                    checked={true}
+                    progress={grammarMasterProgress}
+                    checked={grammarMasterProgress >= 100}
+                    statusText={`${Math.min(10, stats.practicedWords)}/10`}
                     iconColor="bg-[#E8DDED]"
                 />
                 <AchievementCard 
                     title="7 Day Streak" 
                     desc="Maintain a week-long learning habit to unlock."
                     icon="🔥"
-                    progress={70}
-                    checked={false}
-                    statusText="5/7"
+                    progress={streakProgress}
+                    checked={streakProgress >= 100}
+                    statusText={`${Math.min(7, stats.streak)}/7`}
                     iconColor="bg-[#FFF0DC]"
                 />
                  <AchievementCard 
                     title="100 Lesson Club" 
-                    desc="Finish 100 lessons in total to unlock."
+                    desc="Finish 100 quizzes in total to unlock."
                     icon="📖"
-                    progress={15}
-                    checked={false}
-                    locked={true}
+                    progress={lessonsProgress}
+                    checked={lessonsProgress >= 100}
+                    locked={stats.quizzesCompleted === 0}
+                    statusText={`${Math.min(100, stats.quizzesCompleted)}/100`}
                     iconColor="bg-gray-100"
                 />
             </div>

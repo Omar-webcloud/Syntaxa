@@ -7,6 +7,7 @@ import quizData from "@/data/quiz.json";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
 import { toast } from "sonner";
+import { recordQuizCompleted } from "@/lib/userStats";
 import type { WeakTopicsMap } from "@/lib/ai/types";
 
 type QuizQuestion = {
@@ -192,11 +193,14 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
     }
   }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted, isAiQuiz, questionResults]);
 
-  // Log weak topics on quiz completion
+  // Log weak topics and dynamic stats on quiz completion
   useEffect(() => {
     if (!quizFinished || questionResults.length === 0) return;
 
     try {
+      const topicName = isAiQuiz ? "AI Practice Quiz" : "Daily Grammar Quiz";
+      recordQuizCompleted(topicName, score, MAX_QUESTIONS);
+
       const stored = localStorage.getItem("syntaxa_weak_topics");
       const weakMap: WeakTopicsMap = stored ? JSON.parse(stored) : {};
 
@@ -213,9 +217,9 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
 
       localStorage.setItem("syntaxa_weak_topics", JSON.stringify(weakMap));
     } catch (err) {
-      console.error("Failed to save weak topics:", err);
+      console.error("Failed to save quiz results:", err);
     }
-  }, [quizFinished, questionResults]);
+  }, [quizFinished, questionResults, score, isAiQuiz]);
 
   if (!mounted || (questions.length === 0 && !generating)) return null;
 

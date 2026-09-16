@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Clock, HelpCircle, ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useUserStats } from "@/lib/userStats";
 import type { WeakTopicsMap } from "@/lib/ai/types";
 
 interface QuizStartOptions {
@@ -18,6 +19,7 @@ interface DashboardProps {
 
 export default function Dashboard({ onStartQuiz }: DashboardProps) {
   const { user, isAuthenticated } = useAuth();
+  const { stats } = useUserStats();
   const [weakTopicNames] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -25,7 +27,7 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
       if (stored) {
         const weakMap: WeakTopicsMap = JSON.parse(stored);
         return Object.entries(weakMap)
-          .filter(([, stats]) => stats.total > 0 && stats.wrong / stats.total > 0.3)
+          .filter(([, s]) => s.total > 0 && s.wrong / s.total > 0.3)
           .map(([topic]) => topic);
       }
     } catch {
@@ -42,11 +44,7 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
     { name: "Prepositions", color: "bg-[#F3EEF6]" },
   ];
 
-  const history = [
-    { title: "Prepositions", time: "Yesterday", score: "8/10 Correct" },
-    { title: "Articles", time: "20th January", score: "9/10 Correct" },
-    { title: "Verbs", time: "19th January", score: "7/10 Correct" },
-  ];
+  const activeDaysThisWeek = stats.weeklyActivity.filter(Boolean).length;
 
   return (
     <div className="min-h-screen bg-[#FDF9FF] dark:bg-[#0F0A15] p-6 pb-24 space-y-8 animate-in fade-in duration-500">
@@ -129,21 +127,21 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
             🔥
           </div>
           <div>
-            <p className="text-2xl font-black text-gray-900 dark:text-white leading-none">5</p>
+            <p className="text-2xl font-black text-gray-900 dark:text-white leading-none">{stats.streak}</p>
             <p className="text-xs font-bold text-gray-500 uppercase">Day Streak</p>
           </div>
         </div>
         <div className="bg-white dark:bg-[#1C1625] p-5 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-1">
           <div className="flex justify-between items-center">
              <p className="text-sm font-bold text-gray-900 dark:text-white">This Week</p>
-             <p className="text-xs font-bold text-[#8A56A4]">5/7</p>
+             <p className="text-xs font-bold text-[#8A56A4]">{activeDaysThisWeek}/7</p>
           </div>
           <div className="flex justify-between">
-            {[1, 2, 3, 4, 5, 0, 0].map((active, i) => (
+            {stats.weeklyActivity.map((active, i) => (
               <div 
                 key={i} 
                 className={cn(
-                    "w-2 h-2 rounded-full",
+                    "w-2 h-2 rounded-full transition-colors",
                     active ? "bg-[#8A56A4]" : "bg-gray-200 dark:bg-gray-700"
                 )} 
               />
@@ -162,7 +160,8 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
           {topics.map((topic) => (
             <button 
               key={topic.name} 
-              className="px-6 py-3 bg-[#F3EEF6] dark:bg-[#1C1625] rounded-2xl text-gray-900 dark:text-white font-bold whitespace-nowrap active:scale-95 transition-all outline-none"
+              onClick={() => onStartQuiz()}
+              className="px-6 py-3 bg-[#F3EEF6] dark:bg-[#1C1625] rounded-2xl text-gray-900 dark:text-white font-bold whitespace-nowrap active:scale-95 transition-all outline-none hover:bg-[#E8DDED] dark:hover:bg-[#2D2438]"
             >
               {topic.name}
             </button>
@@ -173,16 +172,23 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
       {/* Recent History */}
       <div className="space-y-4">
         <h3 className="text-lg font-black text-gray-900 dark:text-white">Recent History</h3>
-        <div className="space-y-3">
-          {history.map((item, i) => (
-            <div key={i} className="bg-white dark:bg-[#1C1625] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex justify-between items-center">
-               <p className="font-bold text-gray-900 dark:text-white">{item.title}</p>
-               <div className="text-right">
-                 <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{item.time}. {item.score}</p>
-               </div>
-            </div>
-          ))}
-        </div>
+        {stats.quizHistory && stats.quizHistory.length > 0 ? (
+          <div className="space-y-3">
+            {stats.quizHistory.slice(0, 5).map((item) => (
+              <div key={item.id} className="bg-white dark:bg-[#1C1625] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex justify-between items-center">
+                 <p className="font-bold text-gray-900 dark:text-white">{item.title}</p>
+                 <div className="text-right">
+                   <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{item.time}. {item.score}</p>
+                 </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-[#1C1625] p-6 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 text-center space-y-1">
+            <p className="text-sm font-bold text-gray-700 dark:text-gray-300">No quiz history yet</p>
+            <p className="text-xs text-gray-400">Complete your first daily quiz to start tracking your streak and progress!</p>
+          </div>
+        )}
       </div>
     </div>
   );

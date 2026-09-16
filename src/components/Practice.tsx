@@ -7,6 +7,7 @@ import lessonsData from "@/data/lesson.json";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import WritingCoach from "./WritingCoach";
+import { recordPracticeWord } from "@/lib/userStats";
 
 type LessonPattern = {
   id: number;
@@ -99,6 +100,7 @@ export default function Practice() {
       setCorrectCount(prev => prev + 1);
       setFeedback("correct");
       setAiExplanation(null);
+      recordPracticeWord(true);
       return;
     }
 
@@ -121,8 +123,10 @@ export default function Practice() {
         if (data.isCorrect) {
           setCorrectCount(prev => prev + 1);
           setFeedback("correct");
+          recordPracticeWord(true);
         } else {
           setFeedback("incorrect");
+          recordPracticeWord(false);
         }
         setAiExplanation(data.explanation || null);
       } else {
@@ -130,12 +134,14 @@ export default function Practice() {
         setTotalPracticed(prev => prev + 1);
         setFeedback("incorrect");
         setAiExplanation(null);
+        recordPracticeWord(false);
       }
     } catch {
       // Network error — fall back silently
       setTotalPracticed(prev => prev + 1);
       setFeedback("incorrect");
       setAiExplanation(null);
+      recordPracticeWord(false);
     } finally {
       setChecking(false);
     }

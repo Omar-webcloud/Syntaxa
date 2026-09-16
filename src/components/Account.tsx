@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useAuth } from "@/lib/AuthContext";
+import { useUserStats } from "@/lib/userStats";
 
 export default function Account() {
   const { theme, setTheme } = useTheme();
@@ -13,6 +14,7 @@ export default function Account() {
   const [soundActive, setSoundActive] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { user, logout } = useAuth();
+  const { stats, formatTimeSpent } = useUserStats();
 
   useEffect(() => {
     setMounted(true);
@@ -20,15 +22,7 @@ export default function Account() {
 
   if (!mounted) return null;
 
-  const USER_STATS = {
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sheba",
-    stats: {
-      quizzes: 46,
-      streak: 5,
-      gems: 124,
-      timeSpent: "6h 9m"
-    }
-  };
+  const avatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=" + encodeURIComponent(user?.username || "SyntaxaLearner");
 
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex justify-center pb-24 transition-colors duration-300">
@@ -37,7 +31,7 @@ export default function Account() {
         <div className="relative">
           <div className="w-[140px] h-[140px] rounded-[16px] overflow-hidden bg-[#E5CCFA] border-4 border-white dark:border-[#2D2438] shadow-sm flex items-center justify-center">
             <Image 
-              src={USER_STATS.avatar} 
+              src={avatarUrl} 
               alt="Avatar" 
               width={140}
               height={140}
@@ -59,7 +53,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Quiz</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.quizzes}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{stats.quizzesCompleted}</span>
                 </div>
             </div>
 
@@ -69,7 +63,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Streak</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.streak} Days</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{stats.streak} Days</span>
                 </div>
             </div>
 
@@ -79,7 +73,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Gem</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.gems}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{stats.gems}</span>
                 </div>
             </div>
 
@@ -89,7 +83,7 @@ export default function Account() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Time Spent</span>
-                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{USER_STATS.stats.timeSpent}</span>
+                    <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{formatTimeSpent()}</span>
                 </div>
             </div>
         </div>
