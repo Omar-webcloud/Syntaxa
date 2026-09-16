@@ -15,6 +15,7 @@ export interface UserStats {
   lastActiveDate: string | null;
   quizzesCompleted: number;
   practicedWords: number;
+  practicedCorrect: number;
   gems: number;
   timeSpentSeconds: number;
   weeklyActivity: boolean[]; // [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
@@ -32,6 +33,7 @@ export const DEFAULT_USER_STATS: UserStats = {
   lastActiveDate: null,
   quizzesCompleted: 0,
   practicedWords: 0,
+  practicedCorrect: 0,
   gems: 0,
   timeSpentSeconds: 0,
   weeklyActivity: [false, false, false, false, false, false, false],
@@ -156,7 +158,8 @@ export function recordPracticeWord(isCorrect: boolean): UserStats {
   const base = recordActivity();
   const updated: UserStats = {
     ...base,
-    practicedWords: base.practicedWords + 1,
+    practicedWords: (base.practicedWords || 0) + 1,
+    practicedCorrect: (base.practicedCorrect || 0) + (isCorrect ? 1 : 0),
     gems: isCorrect ? base.gems + 5 : base.gems,
   };
   saveUserStats(updated);
@@ -246,5 +249,15 @@ export function useUserStats() {
     };
   }, []);
 
-  return { stats, mounted, formatTimeSpent: () => formatTimeSpent(stats.timeSpentSeconds) };
+  const accuracy =
+    stats.practicedWords > 0
+      ? Math.round(((stats.practicedCorrect || 0) / stats.practicedWords) * 100)
+      : 0;
+
+  return {
+    stats,
+    accuracy,
+    mounted,
+    formatTimeSpent: () => formatTimeSpent(stats.timeSpentSeconds),
+  };
 }

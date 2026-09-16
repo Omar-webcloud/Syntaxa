@@ -7,7 +7,7 @@ import lessonsData from "@/data/lesson.json";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import WritingCoach from "./WritingCoach";
-import { recordPracticeWord } from "@/lib/userStats";
+import { useUserStats, recordPracticeWord } from "@/lib/userStats";
 
 type LessonPattern = {
   id: number;
@@ -31,13 +31,12 @@ export default function Practice() {
   const [userInput, setUserInput] = useState("");
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
-  const [totalPracticed, setTotalPracticed] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [checking, setChecking] = useState(false);
   const [aiExplanation, setAiExplanation] = useState<string | null>(null);
   const [mode, setMode] = useState<PracticeMode>("sentence");
+
+  const { stats, accuracy, mounted } = useUserStats();
 
   const pickRandomSentence = () => {
     const randomIndex = Math.floor(Math.random() * sentencesData.length);
@@ -48,21 +47,8 @@ export default function Practice() {
   };
 
   useEffect(() => {
-    setMounted(true);
-    const storedTotal = localStorage.getItem("syntaxa_practiced_total");
-    const storedCorrect = localStorage.getItem("syntaxa_practiced_correct");
-    if (storedTotal) setTotalPracticed(parseInt(storedTotal, 10));
-    if (storedCorrect) setCorrectCount(parseInt(storedCorrect, 10));
-    
     pickRandomSentence();
   }, []);
-
-  useEffect(() => {
-    if (mounted) {
-      localStorage.setItem("syntaxa_practiced_total", totalPracticed.toString());
-      localStorage.setItem("syntaxa_practiced_correct", correctCount.toString());
-    }
-  }, [totalPracticed, correctCount, mounted]);
 
   const handleCheckAnswer = async () => {
     if (feedback !== null) {
@@ -96,8 +82,6 @@ export default function Practice() {
     
     // Fast path: exact match — no API call needed
     if (isLocalMatch) {
-      setTotalPracticed(prev => prev + 1);
-      setCorrectCount(prev => prev + 1);
       setFeedback("correct");
       setAiExplanation(null);
       recordPracticeWord(true);
@@ -119,9 +103,7 @@ export default function Practice() {
 
       if (res.ok) {
         const data = await res.json();
-        setTotalPracticed(prev => prev + 1);
         if (data.isCorrect) {
-          setCorrectCount(prev => prev + 1);
           setFeedback("correct");
           recordPracticeWord(true);
         } else {
@@ -131,14 +113,12 @@ export default function Practice() {
         setAiExplanation(data.explanation || null);
       } else {
         // API failed — fall back to local result (already know it's not a match)
-        setTotalPracticed(prev => prev + 1);
         setFeedback("incorrect");
         setAiExplanation(null);
         recordPracticeWord(false);
       }
     } catch {
       // Network error — fall back silently
-      setTotalPracticed(prev => prev + 1);
       setFeedback("incorrect");
       setAiExplanation(null);
       recordPracticeWord(false);
@@ -146,8 +126,6 @@ export default function Practice() {
       setChecking(false);
     }
   };
-
-  const accuracy = totalPracticed === 0 ? 0 : Math.round((correctCount / totalPracticed) * 100);
 
   if (!mounted) return null;
   const currentSentence = sentencesData[currentSentenceIndex];
@@ -165,9 +143,9 @@ export default function Practice() {
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
                 <Image src="/book.svg" alt="Book" width={16} height={16} className="w-[16px] h-[16px] object-contain" />
-                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">{totalPracticed} {totalPracticed > 1 ? "Lessons" : "Lesson"}</span>
+                <span className="text-base sm:text-[18px] font-black text-black dark:text-[#F3F4F6]">{stats.practicedWords} {stats.practicedWords === 1 ? "Word" : "Words"}</span>
              </div>
-             <span className="text-[13px] text-[#000000] dark:text-[#9CA3AF] uppercase tracking-tight">Total Practiced</span>
+             <span className="text-[13px] text-[#000000] dark:text-[#9CA3AF] uppercase tracking-tight">Words Practiced</span>
           </div>
           <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center justify-center space-y-1 h-[100px] border border-transparent dark:border-[#2D2438]">
              <div className="flex items-center gap-2">
