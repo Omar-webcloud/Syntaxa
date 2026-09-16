@@ -1,16 +1,39 @@
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
-import { Clock, HelpCircle, ArrowRight } from "lucide-react";
+import { Clock, HelpCircle, ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import type { WeakTopicsMap } from "@/lib/ai/types";
+
+interface QuizStartOptions {
+  aiGenerated?: boolean;
+  weakTopics?: string[];
+}
 
 interface DashboardProps {
-  onStartQuiz: () => void;
+  onStartQuiz: (options?: QuizStartOptions) => void;
 }
 
 export default function Dashboard({ onStartQuiz }: DashboardProps) {
   const { user, isAuthenticated } = useAuth();
+  const [weakTopicNames] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem("syntaxa_weak_topics");
+      if (stored) {
+        const weakMap: WeakTopicsMap = JSON.parse(stored);
+        return Object.entries(weakMap)
+          .filter(([, stats]) => stats.total > 0 && stats.wrong / stats.total > 0.3)
+          .map(([topic]) => topic);
+      }
+    } catch {
+      // ignore
+    }
+    return [];
+  });
+  const weakTopicsAvailable = weakTopicNames.length > 0;
 
   const topics = [
     { name: "Tenses", color: "bg-[#F3EEF6]" },
@@ -77,12 +100,24 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
           </div>
         </div>
 
-        <button 
-          onClick={onStartQuiz}
-          className="w-full py-4 bg-gradient-to-r from-[#8A56A4] to-[#A87BC7] text-white rounded-2xl font-bold text-lg shadow-lg shadow-purple-100 dark:shadow-none active:scale-[0.98] transition-all"
-        >
-          Start Quiz
-        </button>
+        <div className="space-y-3">
+          <button 
+            onClick={() => onStartQuiz()}
+            className="w-full py-4 bg-gradient-to-r from-[#8A56A4] to-[#A87BC7] text-white rounded-2xl font-bold text-lg shadow-lg shadow-purple-100 dark:shadow-none active:scale-[0.98] transition-all"
+          >
+            Start Quiz
+          </button>
+
+          {weakTopicsAvailable && (
+            <button
+              onClick={() => onStartQuiz({ aiGenerated: true, weakTopics: weakTopicNames })}
+              className="w-full py-4 bg-transparent border-2 border-[#FC9502] text-[#FC9502] rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:bg-[#FC9502]/5"
+            >
+              <Sparkles size={18} />
+              Generate AI Quiz for Weak Spots
+            </button>
+          )}
+        </div>
       </div>
       
       <p className="text-center text-xs font-medium text-gray-400 italic">Ready for Your Daily Quiz? Keep It Up!</p>

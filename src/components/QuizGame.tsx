@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, XCircle, ArrowRight, RotateCcw, ArrowLeft } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight, RotateCcw, ArrowLeft, Sparkles } from "lucide-react";
 import quizData from "@/data/quiz.json";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
+import { toast } from "sonner";
+import type { WeakTopicsMap } from "@/lib/ai/types";
 
 type QuizQuestion = {
   id: number;
@@ -16,9 +18,37 @@ type QuizQuestion = {
 
 interface QuizGameProps {
   onBack: () => void;
+  aiGenerated?: boolean;
+  weakTopics?: string[];
 }
 
-export default function QuizGame({ onBack }: QuizGameProps) {
+// Topic keywords used to map questions → lesson topics for weak-topic tracking
+const TOPIC_KEYWORDS: Record<string, string[]> = {
+  "Tenses": ["was", "were", "is", "are", "am", "has", "have", "had", "will", "shall", "going to", "been", "did", "does", "do", "verb+ing", "past", "present", "future", "tense", "continuous", "perfect"],
+  "Articles & Preposition": ["a", "an", "the", "in", "on", "at", "of", "to", "for", "from", "with", "by", "since", "during", "between", "among", "preposition", "article"],
+  "Sentence Structure": ["clause", "conjunction", "although", "because", "if", "who", "which", "that", "too", "enough", "so...that", "structure", "sentence"],
+};
+
+function guessQuestionTopic(question: string): string {
+  const q = question.toLowerCase();
+  let bestTopic = "General";
+  let bestScore = 0;
+
+  for (const [topic, keywords] of Object.entries(TOPIC_KEYWORDS)) {
+    let score = 0;
+    for (const kw of keywords) {
+      if (q.includes(kw)) score++;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestTopic = topic;
+    }
+  }
+
+  return bestTopic;
+}
+
+export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] }: QuizGameProps) {
   const { user, isAuthenticated } = useAuth();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -27,29 +57,35 @@ export default function QuizGame({ onBack }: QuizGameProps) {
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
   const [quizFinished, setQuizFinished] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [isAiQuiz, setIsAiQuiz] = useState(false);
+  // Track per-question results for weak-topic logging
+  const [questionResults, setQuestionResults] = useState<Array<{ questionText: string; correct: boolean }>>([]);
 
   const MAX_QUESTIONS = 10;
 
-  const initQuiz = () => {
-    const shuffled = [...quizData].sort(() => 0.5 - Math.random()).slice(0, MAX_QUESTIONS);
-    const allAnswers = Array.from(new Set(quizData.map(q => q.answer)));
+  const processRawQuestions = (rawQuestions: Array<{ id: number; question: string; answer: string }>) => {
+    const allAnswers = Array.from(
+      new Set([...quizData, ...rawQuestions].map((q) => q.answer)),
+    );
 
-    const processedQuestions = shuffled.map(q => {
+    return rawQuestions.map((q) => {
       let options: string[] = [];
       const match = q.question.match(/\((.*?)\)/);
       let questionText = q.question;
-      
+
       if (match) {
-        options = match[1].split('/').map(s => s.trim());
-        questionText = q.question.replace(/\s*\(.*?\)/, '');
+        options = match[1].split("/").map((s) => s.trim());
+        questionText = q.question.replace(/\s*\(.*?\)/, "");
       }
-      
+
       if (!options.includes(q.answer)) {
         options.push(q.answer);
       }
 
       while (options.length < 4) {
-        const randomAnswer = allAnswers[Math.floor(Math.random() * allAnswers.length)];
+        const randomAnswer =
+          allAnswers[Math.floor(Math.random() * allAnswers.length)];
         if (!options.includes(randomAnswer)) {
           options.push(randomAnswer);
         }
@@ -61,16 +97,56 @@ export default function QuizGame({ onBack }: QuizGameProps) {
         id: q.id,
         questionText,
         options,
-        answer: q.answer
+        answer: q.answer,
       };
     });
+  };
 
-    setQuestions(processedQuestions);
+  const initQuizFromStatic = () => {
+    const shuffled = [...quizData]
+      .sort(() => 0.5 - Math.random())
+      .slice(0, MAX_QUESTIONS);
+    const processed = processRawQuestions(shuffled);
+    setQuestions(processed);
     setCurrentQuestionIndex(0);
     setScore(0);
     setSelectedOption(null);
     setFeedback(null);
     setQuizFinished(false);
+    setIsAiQuiz(false);
+    setQuestionResults([]);
+  };
+
+  const initQuizFromAI = async (topics: string[]) => {
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/ai/generate-quiz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ weakTopics: topics, count: MAX_QUESTIONS }),
+      });
+
+      if (res.ok) {
+        const rawQuestions = await res.json();
+        const processed = processRawQuestions(rawQuestions);
+        setQuestions(processed);
+        setCurrentQuestionIndex(0);
+        setScore(0);
+        setSelectedOption(null);
+        setFeedback(null);
+        setQuizFinished(false);
+        setIsAiQuiz(true);
+        setQuestionResults([]);
+        return;
+      }
+    } catch (err) {
+      console.error("AI quiz generation failed:", err);
+    }
+
+    // Fallback to static
+    toast.error("Couldn't generate a custom quiz, here's one from our question bank");
+    initQuizFromStatic();
+    setGenerating(false);
   };
 
   useEffect(() => {
@@ -85,13 +161,20 @@ export default function QuizGame({ onBack }: QuizGameProps) {
         setSelectedOption(parsed.selectedOption);
         setFeedback(parsed.feedback);
         setQuizFinished(parsed.quizFinished);
+        setIsAiQuiz(parsed.isAiQuiz || false);
+        setQuestionResults(parsed.questionResults || []);
         return;
       } catch (e) {
          console.error(e);
       }
     }
-    
-    initQuiz();
+
+    if (aiGenerated && weakTopics.length > 0) {
+      initQuizFromAI(weakTopics);
+    } else {
+      initQuizFromStatic();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -102,18 +185,66 @@ export default function QuizGame({ onBack }: QuizGameProps) {
         score,
         selectedOption,
         feedback,
-        quizFinished
+        quizFinished,
+        isAiQuiz,
+        questionResults,
       }));
     }
-  }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted]);
+  }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted, isAiQuiz, questionResults]);
 
-  if (!mounted || questions.length === 0) return null;
+  // Log weak topics on quiz completion
+  useEffect(() => {
+    if (!quizFinished || questionResults.length === 0) return;
+
+    try {
+      const stored = localStorage.getItem("syntaxa_weak_topics");
+      const weakMap: WeakTopicsMap = stored ? JSON.parse(stored) : {};
+
+      for (const result of questionResults) {
+        const topic = guessQuestionTopic(result.questionText);
+        if (!weakMap[topic]) {
+          weakMap[topic] = { wrong: 0, total: 0 };
+        }
+        weakMap[topic].total += 1;
+        if (!result.correct) {
+          weakMap[topic].wrong += 1;
+        }
+      }
+
+      localStorage.setItem("syntaxa_weak_topics", JSON.stringify(weakMap));
+    } catch (err) {
+      console.error("Failed to save weak topics:", err);
+    }
+  }, [quizFinished, questionResults]);
+
+  if (!mounted || (questions.length === 0 && !generating)) return null;
+
+  if (generating) {
+    return (
+      <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center justify-center pb-24 transition-colors duration-300">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 bg-[#F0E4FF] dark:bg-[#2D1F3D] rounded-full flex items-center justify-center">
+            <Sparkles className="text-[#8A56A4] dark:text-[#A87BC7] animate-pulse" size={32} />
+          </div>
+          <p className="text-lg font-bold text-[#8A56A4] dark:text-[#A87BC7]">Generating your quiz...</p>
+          <p className="text-sm text-gray-500 dark:text-[#9CA3AF]">Creating questions tailored to your weak spots</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentQ = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / MAX_QUESTIONS) * 100;
 
   const handleAction = () => {
     if (feedback !== null) {
+      // Record this question's result
+      const isCorrect = feedback === "correct";
+      setQuestionResults((prev) => [
+        ...prev,
+        { questionText: currentQ.questionText, correct: isCorrect },
+      ]);
+
       if (currentQuestionIndex + 1 >= MAX_QUESTIONS) {
         setQuizFinished(true);
       } else {
@@ -134,6 +265,14 @@ export default function QuizGame({ onBack }: QuizGameProps) {
     }
   };
 
+  const handlePlayAgain = () => {
+    if (isAiQuiz && weakTopics && weakTopics.length > 0) {
+      initQuizFromAI(weakTopics);
+    } else {
+      initQuizFromStatic();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 space-y-6">
@@ -149,7 +288,16 @@ export default function QuizGame({ onBack }: QuizGameProps) {
           <p className="text-base sm:text-[18px] font-semibold text-[#111] dark:text-[#9CA3AF] opacity-80">
             Welcome {isAuthenticated ? `Back, ${user?.username}!` : "to Syntaxa!"}
           </p>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">Your Daily Quiz</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">
+            {isAiQuiz ? (
+              <span className="flex items-center gap-2">
+                <Sparkles size={24} className="text-[#FC9502]" />
+                AI-Generated Quiz
+              </span>
+            ) : (
+              "Your Daily Quiz"
+            )}
+          </h1>
         </div>
 
         {!quizFinished ? (
@@ -279,7 +427,7 @@ export default function QuizGame({ onBack }: QuizGameProps) {
 
                 <div className="space-y-3">
                     <button 
-                        onClick={initQuiz}
+                        onClick={handlePlayAgain}
                         className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-base sm:text-[18px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-purple-200 dark:shadow-none"
                     >
                         <RotateCcw size={20} /> Play Again

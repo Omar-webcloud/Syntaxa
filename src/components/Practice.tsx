@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BarChart, Lightbulb, Type, Layers, Layout, CheckCircle, XCircle, ArrowRight, X } from "lucide-react";
+import { BarChart, Lightbulb, Type, Layers, Layout, CheckCircle, XCircle, ArrowRight, X, Loader2, PenLine } from "lucide-react";
 import sentencesData from "@/data/practice-sentence.json";
 import lessonsData from "@/data/lesson.json";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import WritingCoach from "./WritingCoach";
 
 type LessonPattern = {
   id: number;
@@ -23,6 +24,8 @@ type Lesson = {
   patterns: LessonPattern[];
 };
 
+type PracticeMode = "sentence" | "writing";
+
 export default function Practice() {
   const [userInput, setUserInput] = useState("");
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
@@ -31,12 +34,16 @@ export default function Practice() {
   const [correctCount, setCorrectCount] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [checking, setChecking] = useState(false);
+  const [aiExplanation, setAiExplanation] = useState<string | null>(null);
+  const [mode, setMode] = useState<PracticeMode>("sentence");
 
   const pickRandomSentence = () => {
     const randomIndex = Math.floor(Math.random() * sentencesData.length);
     setCurrentSentenceIndex(randomIndex);
     setUserInput("");
     setFeedback(null);
+    setAiExplanation(null);
   };
 
   useEffect(() => {
@@ -56,7 +63,7 @@ export default function Practice() {
     }
   }, [totalPracticed, correctCount, mounted]);
 
-  const handleCheckAnswer = () => {
+  const handleCheckAnswer = async () => {
     if (feedback !== null) {
         pickRandomSentence();
         return;
@@ -84,14 +91,53 @@ export default function Practice() {
     }
 
     const normInput = normalize(userInput);
-    const isCorrect = normInput === normalize(cleanAnswer) || (targetWord && normInput === normalize(targetWord));
+    const isLocalMatch = normInput === normalize(cleanAnswer) || (targetWord && normInput === normalize(targetWord));
     
-    setTotalPracticed(prev => prev + 1);
-    if (isCorrect) {
-      setFeedback("correct");
+    // Fast path: exact match — no API call needed
+    if (isLocalMatch) {
+      setTotalPracticed(prev => prev + 1);
       setCorrectCount(prev => prev + 1);
-    } else {
+      setFeedback("correct");
+      setAiExplanation(null);
+      return;
+    }
+
+    // Slow path: ask AI to judge
+    setChecking(true);
+    try {
+      const res = await fetch("/api/ai/check-answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: currentSentence.question,
+          expectedAnswer: cleanAnswer,
+          userAnswer: userInput.trim(),
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setTotalPracticed(prev => prev + 1);
+        if (data.isCorrect) {
+          setCorrectCount(prev => prev + 1);
+          setFeedback("correct");
+        } else {
+          setFeedback("incorrect");
+        }
+        setAiExplanation(data.explanation || null);
+      } else {
+        // API failed — fall back to local result (already know it's not a match)
+        setTotalPracticed(prev => prev + 1);
+        setFeedback("incorrect");
+        setAiExplanation(null);
+      }
+    } catch {
+      // Network error — fall back silently
+      setTotalPracticed(prev => prev + 1);
       setFeedback("incorrect");
+      setAiExplanation(null);
+    } finally {
+      setChecking(false);
     }
   };
 
@@ -126,7 +172,38 @@ export default function Practice() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438] flex flex-col items-center text-center">
+        {/* Mode Toggle */}
+        <div className="flex bg-white dark:bg-[#1C1625] rounded-[20px] p-1.5 border border-gray-100 dark:border-[#2D2438] shadow-sm">
+          <button
+            onClick={() => setMode("sentence")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-bold transition-all duration-200",
+              mode === "sentence"
+                ? "bg-[#8A56A4] text-white shadow-md"
+                : "text-gray-500 dark:text-[#9CA3AF] hover:text-[#8A56A4]"
+            )}
+          >
+            <Lightbulb size={16} />
+            Correct Sentence
+          </button>
+          <button
+            onClick={() => setMode("writing")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-3 rounded-[14px] text-[14px] font-bold transition-all duration-200",
+              mode === "writing"
+                ? "bg-[#8A56A4] text-white shadow-md"
+                : "text-gray-500 dark:text-[#9CA3AF] hover:text-[#8A56A4]"
+            )}
+          >
+            <PenLine size={16} />
+            Free Writing
+          </button>
+        </div>
+
+        {mode === "writing" ? (
+          <WritingCoach />
+        ) : (
+          <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438] flex flex-col items-center text-center">
             <span className="bg-transparent text-[#8A56A4] dark:text-[#A87BC7]   dark:border-[#A87BC7] text-[13px] font-black px-4 py-1.5 rounded-[10px] uppercase tracking-wide">
                 Correct The Sentence
             </span>
@@ -144,8 +221,8 @@ export default function Practice() {
                         type="text"
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleCheckAnswer()}
-                        disabled={feedback !== null}
+                        onKeyDown={(e) => e.key === 'Enter' && !checking && handleCheckAnswer()}
+                        disabled={feedback !== null || checking}
                         placeholder="Type Your Answer Here..."
                         className={cn(
                           "w-full h-[64px] bg-[#F3EEF6] dark:bg-[#0F0A15] border-2 rounded-[24px] px-6 pr-12 text-center text-[16px] font-bold outline-none transition-colors",
@@ -171,23 +248,47 @@ export default function Practice() {
                     </div>
                 )}
 
+                {feedback === "correct" && aiExplanation && (
+                    <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 p-4 rounded-[20px] text-[14px] font-medium text-left border border-green-100 dark:border-green-900/30">
+                        <span className="flex items-center gap-1.5 text-green-500 dark:text-green-400 text-[12px] uppercase font-bold mb-1">
+                          <Lightbulb size={14} /> Grammar Note
+                        </span>
+                        {aiExplanation}
+                    </div>
+                )}
+
+                {feedback === "incorrect" && aiExplanation && (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 p-4 rounded-[20px] text-[14px] font-medium text-left border border-amber-100 dark:border-amber-900/30">
+                        <span className="flex items-center gap-1.5 text-amber-500 dark:text-amber-400 text-[12px] uppercase font-bold mb-1">
+                          <Lightbulb size={14} /> Why?
+                        </span>
+                        {aiExplanation}
+                    </div>
+                )}
+
                 <button 
                   onClick={handleCheckAnswer}
+                  disabled={checking}
                   className={cn(
                     "w-full h-[64px] text-white rounded-[24px] text-base sm:text-[18px] font-bold shadow-lg dark:shadow-none active:scale-95 transition-all flex items-center justify-center gap-2",
-                    feedback !== null 
-                      ? "bg-[#111] dark:bg-white text-white dark:text-black hover:opacity-90 shadow-gray-200" 
-                      : "bg-[#8A56A4] shadow-purple-200"
+                    checking
+                      ? "bg-[#8A56A4] opacity-80 cursor-wait"
+                      : feedback !== null 
+                        ? "bg-[#111] dark:bg-white text-white dark:text-black hover:opacity-90 shadow-gray-200" 
+                        : "bg-[#8A56A4] shadow-purple-200"
                   )}
                 >
-                    {feedback !== null ? (
+                    {checking ? (
+                        <><Loader2 size={20} className="animate-spin" /> Checking...</>
+                    ) : feedback !== null ? (
                         <>Continue <ArrowRight size={20} /></>
                     ) : (
                         "Check Answer"
                     )}
                 </button>
             </div>
-        </div>
+          </div>
+        )}
 
         <div className="space-y-4 pb-4">
             <h3 className="text-lg sm:text-[20px] font-black px-2 text-black dark:text-[#F3F4F6]">Practice Exercises</h3>
@@ -197,7 +298,7 @@ export default function Practice() {
                     icon={<Lightbulb size={24} />} 
                     title="Error Correction" 
                     desc="Identify and Fix Common Mistakes."
-                    onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+                    onClick={() => { setMode("sentence"); window.scrollTo({top: 0, behavior: 'smooth'}); }}
                 />
                 <ExerciseCategory 
                     icon={<Type size={24} />} 
