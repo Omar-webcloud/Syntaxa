@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, X, Volume2, Loader2, Globe, BookOpen, Languages } from "lucide-react";
+import { Search, X, Loader2, Globe, BookOpen, Languages } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PronunciationButton from "@/components/PronunciationButton";
 import type { SimplifyDefinitionResponse, TranslateResponse } from "@/lib/ai/types";
 
 // ─── Types ─────────────────────────────────────────────────────────
@@ -158,34 +159,6 @@ export default function Dictionary() {
     setQuery("");
   };
 
-  // ─── Audio ─────────────────────────────────────────────────────
-
-  const playSound = async (word: string) => {
-    try {
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
-      );
-      const data = await response.json();
-      const audioUrl = data[0]?.phonetics?.find(
-        (p: { audio?: string }) => p.audio,
-      )?.audio;
-
-      if (audioUrl) {
-        const audio = new Audio(audioUrl);
-        audio.play();
-      } else {
-        const utterance = new SpeechSynthesisUtterance(word);
-        utterance.lang = "en-US";
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch (err) {
-      console.error("Audio play failed, falling back to synthesis", err);
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = "en-US";
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
   // ─── Search handlers per mode ──────────────────────────────────
 
   const searchEasyEnglish = useCallback(async (word: string) => {
@@ -336,7 +309,22 @@ export default function Dictionary() {
 
   // ─── Render helpers ────────────────────────────────────────────
 
-  const isEnglishSource = mode === "en-easy" || mode === "en-ko" || mode === "en-bn";
+  const getModeLangs = () => {
+    switch (mode) {
+      case "en-easy":
+        return { source: "en", target: "en" };
+      case "en-ko":
+        return { source: "en", target: "ko" };
+      case "ko-en":
+        return { source: "ko", target: "en" };
+      case "en-bn":
+        return { source: "en", target: "bn" };
+      case "bn-en":
+        return { source: "bn", target: "en" };
+      default:
+        return { source: "en", target: "en" };
+    }
+  };
 
   const renderResult = () => {
     if (!result) return null;
@@ -347,9 +335,17 @@ export default function Dictionary() {
           <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
             <div className="flex justify-between items-start">
               <div className="space-y-1">
-                <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">
-                  {result.word}
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">
+                    {result.word}
+                  </h2>
+                  <PronunciationButton
+                    text={result.word}
+                    lang="en"
+                    variant="icon"
+                    iconSize={22}
+                  />
+                </div>
                 {result.phonetic && (
                   <p className="text-base text-gray-400 dark:text-[#9CA3AF]">
                     {result.phonetic}
@@ -378,26 +374,44 @@ export default function Dictionary() {
               ))}
             </div>
 
-            <button
-              onClick={() => playSound(result.word)}
-              className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform"
-            >
-              <Volume2 size={24} />
-              Listen Pronunciation
-            </button>
+            <PronunciationButton
+              text={result.word}
+              lang="en"
+              label="Listen Pronunciation"
+            />
           </div>
         );
 
-      case "translation":
+      case "translation": {
+        const { source: srcLang, target: tgtLang } = getModeLangs();
         return (
           <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
-            <div className="space-y-1">
-              <p className="text-[13px] font-bold text-gray-400 dark:text-[#9CA3AF] uppercase">
-                {result.sourceText}
-              </p>
-              <h2 className="text-[24px] sm:text-3xl font-black text-[#8A56A4] dark:text-[#A87BC7]">
-                {result.translated}
-              </h2>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[13px] font-bold text-gray-400 dark:text-[#9CA3AF] uppercase">
+                  {result.sourceText}
+                </p>
+                <PronunciationButton
+                  text={result.sourceText}
+                  lang={srcLang}
+                  variant="inline"
+                  label={`Listen ${srcLang.toUpperCase()}`}
+                  iconSize={13}
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <h2 className="text-[24px] sm:text-3xl font-black text-[#8A56A4] dark:text-[#A87BC7]">
+                  {result.translated}
+                </h2>
+                <PronunciationButton
+                  text={result.translated}
+                  lang={tgtLang}
+                  variant="icon"
+                  iconSize={24}
+                />
+              </div>
+
               {result.romanization && (
                 <p className="text-base text-gray-500 dark:text-[#9CA3AF] italic">
                   {result.romanization}
@@ -427,30 +441,46 @@ export default function Dictionary() {
               </div>
             )}
 
-            {isEnglishSource && (
-              <button
-                onClick={() => playSound(result.sourceText)}
-                className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform"
-              >
-                <Volume2 size={24} />
-                Listen Pronunciation
-              </button>
-            )}
+            <PronunciationButton
+              text={result.translated}
+              lang={tgtLang}
+              label={`Listen Pronunciation (${tgtLang.toUpperCase()})`}
+              showLanguageTag
+            />
           </div>
         );
+      }
 
       case "bangla":
         return (
           <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
-            <div className="space-y-1">
-              <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">
-                {result.entry.bn}
-              </h2>
-              <p className="text-base sm:text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">
-                {result.entry.pron && result.entry.pron.length > 0
-                  ? `/${result.entry.pron[0]}/`
-                  : result.entry.en}
-              </p>
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">
+                    {result.entry.bn}
+                  </h2>
+                  <PronunciationButton
+                    text={result.entry.bn}
+                    lang="bn"
+                    variant="icon"
+                    iconSize={22}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <p className="text-base sm:text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">
+                    {result.entry.pron && result.entry.pron.length > 0
+                      ? `/${result.entry.pron[0]}/`
+                      : result.entry.en}
+                  </p>
+                  <PronunciationButton
+                    text={result.entry.en}
+                    lang="en"
+                    variant="icon"
+                    iconSize={16}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -472,13 +502,19 @@ export default function Dictionary() {
               )}
             </div>
 
-            <button
-              onClick={() => playSound(result.entry.en)}
-              className="w-full h-[60px] bg-[#8A56A4] text-white rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform"
-            >
-              <Volume2 size={24} />
-              Listen Pronunciation
-            </button>
+            <div className="space-y-3">
+              <PronunciationButton
+                text={result.entry.en}
+                lang="en"
+                label="Listen English Pronunciation"
+              />
+              <PronunciationButton
+                text={result.entry.bn}
+                lang="bn"
+                variant="secondary"
+                label="Listen Bangla Pronunciation"
+              />
+            </div>
           </div>
         );
     }
@@ -591,18 +627,34 @@ export default function Dictionary() {
             <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438]">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                  <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-black dark:text-[#F3F4F6]">
-                    {wordOfDay.en}
-                  </h2>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-[20px] sm:text-3xl font-bold sm:font-black text-black dark:text-[#F3F4F6]">
+                      {wordOfDay.en}
+                    </h2>
+                    <PronunciationButton
+                      text={wordOfDay.en}
+                      lang="en"
+                      variant="icon"
+                      iconSize={22}
+                    />
+                  </div>
                   <p className="text-base sm:text-[18px] text-[#8A56A4] dark:text-[#A87BC7] opacity-70">
                     {wordOfDay.pron && wordOfDay.pron.length > 0
                       ? `/${wordOfDay.pron[0]}/`
                       : ""}
                   </p>
                 </div>
-                <span className="text-[20px] sm:text-2xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">
-                  {wordOfDay.bn}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[20px] sm:text-2xl font-bold sm:font-black text-[#8A56A4] dark:text-[#A87BC7]">
+                    {wordOfDay.bn}
+                  </span>
+                  <PronunciationButton
+                    text={wordOfDay.bn}
+                    lang="bn"
+                    variant="icon"
+                    iconSize={20}
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -620,13 +672,12 @@ export default function Dictionary() {
                 )}
               </div>
 
-              <button
-                onClick={() => playSound(wordOfDay.en)}
-                className="w-full h-[60px] bg-white dark:bg-[#1C1625] border-2 border-[#E8DDED] dark:border-[#2D2438] text-black dark:text-[#F3F4F6] rounded-[24px] text-[16px] font-bold flex items-center justify-center gap-3 active:scale-95 transition-transform"
-              >
-                <Volume2 size={24} />
-                Listen Pronunciation
-              </button>
+              <PronunciationButton
+                text={wordOfDay.en}
+                lang="en"
+                variant="secondary"
+                label="Listen Pronunciation"
+              />
             </div>
           </div>
         )}

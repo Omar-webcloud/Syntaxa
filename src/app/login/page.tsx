@@ -104,6 +104,20 @@ export default function Login() {
                      {loading ? "Logging in..." : "Log In"}
                      {!loading && <ArrowRight size={18} />}
                  </button>
+
+                 <div className="text-center pt-1">
+                     <button
+                         type="button"
+                         onClick={() => {
+                             setUsername("Guest");
+                             setPassword("123");
+                             setError("");
+                         }}
+                         className="text-xs sm:text-sm font-semibold text-[#8A56A4] dark:text-[#A87BC7] hover:underline underline-offset-4 hover:opacity-80 transition-opacity"
+                     >
+                         Fill in demo credentials
+                     </button>
+                 </div>
              </form>
 
              <div className="relative py-2">
