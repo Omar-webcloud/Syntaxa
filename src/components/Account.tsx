@@ -1,35 +1,90 @@
 "use client";
 
-import { Trophy, Target, Flame, Clock } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Trophy, Target, Flame, Clock, Check, X, RotateCcw, Edit2, Shuffle, Camera } from "lucide-react";
+import { cn, FORMAL_AVATARS, getAvatarUrl } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useAuth } from "@/lib/AuthContext";
-import { useUserStats } from "@/lib/userStats";
+import { useUserStats, resetUserStats } from "@/lib/userStats";
+import { toast } from "sonner";
 
 export default function Account() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [reminderActive, setReminderActive] = useState(true);
   const [soundActive, setSoundActive] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { user, logout } = useAuth();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const { user, updateUsername, updateAvatar, resetGuest } = useAuth();
   const { stats, formatTimeSpent } = useUserStats();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (user?.username) {
+      setNameInput(user.username);
+    }
+  }, [user?.username]);
 
   if (!mounted) return null;
 
-  const avatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=" + encodeURIComponent(user?.username || "SyntaxaLearner");
+  const currentName = user?.username || "Guest Learner";
+  const currentAvatarSeed = user?.avatar || user?.username || "Alexander";
+  const avatarUrl = getAvatarUrl(currentAvatarSeed);
+
+  const handleSaveName = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = nameInput.trim();
+    if (trimmed.length > 0) {
+      updateUsername(trimmed);
+      setIsEditingName(false);
+      toast.success("Profile name updated!");
+    } else {
+      toast.error("Please enter a valid name");
+    }
+  };
+
+  const handleSelectAvatar = (seed: string) => {
+    updateAvatar(seed);
+    setShowAvatarPicker(false);
+    toast.success("Avatar updated!");
+  };
+
+  const handleRandomAvatar = () => {
+    const formalPool = [
+      "Alexander", "Sophia", "James", "Emma", "William", "Olivia",
+      "Michael", "Elena", "David", "Grace", "Lucas", "Clara",
+      "Thomas", "Victoria", "Benjamin", "Charlotte", "Arthur", "Amelia",
+      "Henry", "Alice", "Edward", "Nora", "George", "Hazel"
+    ];
+    const available = formalPool.filter((s) => s !== currentAvatarSeed);
+    const randomSeed = available[Math.floor(Math.random() * available.length)] || "Alexander";
+    updateAvatar(randomSeed);
+    toast.success("Randomized avatar!");
+  };
+
+  const handleResetData = () => {
+    resetUserStats();
+    resetGuest();
+    setNameInput("Guest Learner");
+    setShowResetConfirm(false);
+    toast.success("Progress and account data reset!");
+  };
+
+  const isDarkMode = resolvedTheme === "dark" || theme === "dark";
 
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex justify-center pb-24 transition-colors duration-300">
       <div className="w-full max-w-[412px] md:max-w-[768px] p-6 flex flex-col items-center">
         
-        <div className="relative">
-          <div className="w-[140px] h-[140px] rounded-[16px] overflow-hidden bg-[#E5CCFA] border-4 border-white dark:border-[#2D2438] shadow-sm flex items-center justify-center">
+        {/* Avatar & Edit */}
+        <div className="relative group">
+          <div 
+            onClick={() => setShowAvatarPicker(true)}
+            className="w-[140px] h-[140px] rounded-[24px] overflow-hidden bg-[#E5CCFA] dark:bg-[#2A2035] border-4 border-white dark:border-[#2D2438] shadow-md flex items-center justify-center cursor-pointer hover:scale-105 transition-all"
+          >
             <Image 
               src={avatarUrl} 
               alt="Avatar" 
@@ -39,14 +94,63 @@ export default function Account() {
               unoptimized
             />
           </div>
-          <div className="absolute -bottom-2 -right-2 w-[40px] h-[40px] cursor-pointer hover:scale-110 transition-transform drop-shadow-sm rounded-full">
-             <Image src="/pen.svg" alt="Edit" width={40} height={40} className="w-full h-full object-cover rounded-full" />
-          </div>
+          <button 
+            onClick={() => setShowAvatarPicker(true)}
+            title="Change Avatar"
+            className="absolute -bottom-2 -right-2 w-[40px] h-[40px] bg-[#8A56A4] dark:bg-[#A87BC7] text-white flex items-center justify-center rounded-full hover:scale-110 active:scale-95 transition-transform shadow-md border-2 border-white dark:border-[#0F0A15]"
+          >
+            <Camera size={18} />
+          </button>
         </div>
 
-        <h1 className="mt-6 text-xl sm:text-[24px] font-bold">{user?.username || "Guest User"}</h1>
+        {/* Profile Name / Edit mode */}
+        {isEditingName ? (
+          <form onSubmit={handleSaveName} className="mt-5 flex items-center gap-2 w-full max-w-xs">
+            <input
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Your name..."
+              autoFocus
+              className="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-[#1C1625] border-2 border-[#8A56A4] text-sm sm:text-base font-bold text-gray-900 dark:text-white outline-none shadow-sm"
+            />
+            <button
+              type="submit"
+              className="p-2.5 rounded-xl bg-[#8A56A4] text-white hover:bg-[#7D4D95] active:scale-95 transition-all shadow-sm"
+              title="Save"
+            >
+              <Check size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setNameInput(currentName);
+                setIsEditingName(false);
+              }}
+              className="p-2.5 rounded-xl bg-gray-200 dark:bg-[#2D2438] text-gray-700 dark:text-gray-300 hover:opacity-80 active:scale-95 transition-all shadow-sm"
+              title="Cancel"
+            >
+              <X size={18} />
+            </button>
+          </form>
+        ) : (
+          <div className="mt-5 flex items-center gap-2.5">
+            <h1 className="text-xl sm:text-[24px] font-black text-gray-900 dark:text-white">{currentName}</h1>
+            <button
+              onClick={() => {
+                setIsEditingName(true);
+                setNameInput(currentName);
+              }}
+              className="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+              title="Rename Username"
+            >
+              <Edit2 size={16} />
+            </button>
+          </div>
+        )}
 
-        <div className="mt-10 w-full grid grid-cols-2 md:grid-cols-4 gap-[12px]">
+        {/* Stats Grid */}
+        <div className="mt-8 w-full grid grid-cols-2 md:grid-cols-4 gap-[12px]">
             <div className="h-[88px] bg-white dark:bg-[#1C1625] rounded-[28px] flex items-center p-[12px] gap-[12px] shadow-sm border border-transparent dark:border-[#2D2438]">
                 <div className="w-[49px] h-[48px] rounded-full bg-[#F0E4FF] dark:bg-[#2A2035] flex items-center justify-center shrink-0">
                     <Target size={22} className="text-[#8A56A4] dark:text-[#A87BC7]" />
@@ -88,6 +192,7 @@ export default function Account() {
             </div>
         </div>
 
+        {/* Settings */}
         <div className="mt-8 w-full text-left">
            <h2 className="text-base sm:text-[18px] font-bold px-2">Settings</h2>
         </div>
@@ -105,19 +210,106 @@ export default function Account() {
             />
             <SettingRow 
               label="Dark Mode" 
-              active={theme === "dark"} 
-              onToggle={() => setTheme(theme === "dark" ? "light" : "dark")}
+              active={isDarkMode} 
+              onToggle={() => setTheme(isDarkMode ? "light" : "dark")}
             />
         </div>
 
-        <div className="mt-4 w-full">
-             <button 
-                onClick={logout}
-                className="w-full h-[51px] bg-white dark:bg-[#1C1625] rounded-[16px] flex items-center justify-center shadow-sm border border-transparent dark:border-[#2D2438] active:scale-95 transition-transform"
-             >
-                 <span className="text-[16px] font-bold text-[#D00000] dark:text-[#FF4D4D]">Log Out</span>
-             </button>
+        {/* Reset Progress Section */}
+        <div className="mt-6 w-full space-y-3">
+          {showResetConfirm ? (
+            <div className="bg-white dark:bg-[#1C1625] p-5 rounded-2xl border border-red-200 dark:border-red-900/40 text-center space-y-3 shadow-sm">
+              <p className="text-sm font-bold text-gray-900 dark:text-white">
+                Reset streak, gems, quiz history, and progress?
+              </p>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={handleResetData}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold active:scale-95 transition-all"
+                >
+                  Yes, Reset Everything
+                </button>
+                <button
+                  onClick={() => setShowResetConfirm(false)}
+                  className="px-4 py-2 bg-gray-200 dark:bg-[#2D2438] text-gray-800 dark:text-gray-200 rounded-xl text-sm font-semibold active:scale-95 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setShowResetConfirm(true)}
+              className="w-full h-[51px] bg-white dark:bg-[#1C1625] rounded-[16px] flex items-center justify-center gap-2 shadow-sm border border-transparent dark:border-[#2D2438] active:scale-95 transition-transform hover:border-red-200 dark:hover:border-red-900/30"
+            >
+              <RotateCcw size={16} className="text-[#D00000] dark:text-[#FF4D4D]" />
+              <span className="text-[15px] font-bold text-[#D00000] dark:text-[#FF4D4D]">Reset Progress</span>
+            </button>
+          )}
         </div>
+
+        {/* Avatar Picker Modal */}
+        {showAvatarPicker && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-[#1C1625] rounded-[32px] p-6 w-full max-w-sm border border-gray-100 dark:border-[#2D2438] shadow-2xl space-y-5 animate-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-black text-gray-900 dark:text-white">Choose Avatar</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Select a clean, formal avatar style</p>
+                </div>
+                <button
+                  onClick={() => setShowAvatarPicker(false)}
+                  className="p-1.5 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-4 gap-3 max-h-[260px] overflow-y-auto p-1">
+                {FORMAL_AVATARS.map((seed) => {
+                  const url = getAvatarUrl(seed);
+                  const isSelected = currentAvatarSeed === seed;
+                  return (
+                    <button
+                      key={seed}
+                      onClick={() => handleSelectAvatar(seed)}
+                      className={cn(
+                        "w-16 h-16 rounded-2xl overflow-hidden bg-[#F3EEF6] dark:bg-[#0F0A15] border-2 transition-all p-1 flex items-center justify-center",
+                        isSelected
+                          ? "border-[#8A56A4] dark:border-[#A87BC7] scale-105 shadow-md"
+                          : "border-transparent hover:scale-105 opacity-80 hover:opacity-100"
+                      )}
+                    >
+                      <Image
+                        src={url}
+                        alt={seed}
+                        width={60}
+                        height={60}
+                        className="w-full h-full object-cover rounded-xl"
+                        unoptimized
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={handleRandomAvatar}
+                  className="flex-1 py-3 bg-[#F3EEF6] dark:bg-[#2D2438] text-gray-900 dark:text-white rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 hover:bg-[#E8DDED] active:scale-95 transition-all"
+                >
+                  <Shuffle size={16} /> Randomize
+                </button>
+                <button
+                  onClick={() => setShowAvatarPicker(false)}
+                  className="flex-1 py-3 bg-[#8A56A4] text-white rounded-2xl text-xs sm:text-sm font-bold hover:bg-[#7D4D95] active:scale-95 transition-all"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

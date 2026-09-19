@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { Clock, HelpCircle, ArrowRight, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { cn, getAvatarUrl } from "@/lib/utils";
 import { useUserStats } from "@/lib/userStats";
 import type { WeakTopicsMap } from "@/lib/ai/types";
+import Link from "next/link";
+import Image from "next/image";
 
 interface QuizStartOptions {
   aiGenerated?: boolean;
@@ -18,7 +19,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ onStartQuiz }: DashboardProps) {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { stats } = useUserStats();
   const [weakTopicNames] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
@@ -49,19 +50,27 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
   return (
     <div className="min-h-screen bg-[#FDF9FF] dark:bg-[#0F0A15] p-6 pb-24 space-y-8 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-center">
         <div className="space-y-1">
           <p className="text-gray-900 dark:text-gray-300 font-semibold">
-            Welcome {isAuthenticated ? `Back, ${user?.username}!` : "to Syntaxa!"}
+            Welcome Back, {user?.username || "Learner"}!
           </p>
           <h1 className="text-2xl font-black text-gray-900 dark:text-white">Your Daily Quiz</h1>
         </div>
-        {!isAuthenticated && (
-          <div className="flex gap-2">
-            <Link href="/signup" className="px-1 py-1 min-[353px]:px-3 min-[353px]:py-1.5 min-[400px]:px-2 min-[400px]:py-2 rounded border border-[#8A56A4] text-[#8A56A4] text-xs min-[400px]:text-sm font-bold">Sign Up</Link>
-            <Link href="/login" className="px-1 py-1 min-[353px]:px-3 min-[353px]:py-1.5 min-[400px]:px-2 min-[400px]:py-2 rounded bg-[#8A56A4] text-white text-xs min-[400px]:text-sm font-semibold">Log In</Link>
-          </div>
-        )}
+        <Link
+          href="/account"
+          className="w-12 h-12 rounded-2xl overflow-hidden bg-[#E5CCFA] dark:bg-[#2A2035] border-2 border-white dark:border-[#2D2438] shadow-sm hover:scale-105 active:scale-95 transition-transform shrink-0"
+          title="Account & Profile"
+        >
+          <Image
+            src={getAvatarUrl(user?.avatar || user?.username)}
+            alt="Avatar"
+            width={48}
+            height={48}
+            className="w-full h-full object-cover"
+            unoptimized
+          />
+        </Link>
       </div>
 
       {/* Hero Quiz Card */}

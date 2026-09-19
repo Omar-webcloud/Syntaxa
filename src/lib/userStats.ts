@@ -209,6 +209,18 @@ export function formatTimeSpent(seconds: number): string {
   return `${Math.max(1, minutes)}m`;
 }
 
+export function resetUserStats(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(STATS_STORAGE_KEY);
+    sessionStorage.removeItem(STATS_SESSION_KEY);
+    localStorage.removeItem("syntaxa_weak_topics");
+    window.dispatchEvent(new Event(STATS_UPDATED_EVENT));
+  } catch (err) {
+    console.error("Failed to reset user stats:", err);
+  }
+}
+
 /**
  * Hook to reactively subscribe to live user stats
  */
