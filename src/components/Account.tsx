@@ -1,6 +1,7 @@
 "use client";
 
-import { Trophy, Target, Flame, Clock, Check, X, RotateCcw, Edit2, Shuffle, Camera } from "lucide-react";
+import { Trophy, Target, Flame, Clock, Check, X, RotateCcw, Edit2, Shuffle, Camera, ShieldCheck, ChevronRight, Palette, Code2 } from "lucide-react";
+import Link from "next/link";
 import { cn, FORMAL_AVATARS, getAvatarUrl } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
@@ -246,6 +247,62 @@ export default function Account() {
               <span className="text-[15px] font-bold text-[#D00000] dark:text-[#FF4D4D]">Reset Progress</span>
             </button>
           )}
+        </div>
+
+        {/* Legal & About Section */}
+        <div className="mt-6 w-full space-y-3">
+          <Link
+            href="/privacy"
+            className="w-full bg-white dark:bg-[#1C1625] rounded-[20px] p-4 flex items-center justify-between shadow-sm border border-transparent dark:border-[#2D2438] hover:border-[#8A56A4]/40 dark:hover:border-[#A87BC7]/40 active:scale-[0.99] transition-all group"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-[#F0E4FF] dark:bg-[#2A2035] flex items-center justify-center text-[#8A56A4] dark:text-[#C49CE6] group-hover:scale-105 transition-transform shrink-0">
+                <ShieldCheck size={20} />
+              </div>
+              <div className="text-left">
+                <span className="block text-sm sm:text-[15px] font-bold text-gray-900 dark:text-white group-hover:text-[#8A56A4] dark:group-hover:text-[#C49CE6] transition-colors">
+                  Privacy Policy & Credits
+                </span>
+                <span className="block text-xs text-gray-500 dark:text-[#9CA3AF]">
+                  Data protection, terms & project creators
+                </span>
+              </div>
+            </div>
+            <div className="text-gray-400 group-hover:text-[#8A56A4] dark:group-hover:text-[#C49CE6] transition-colors pr-1">
+              <ChevronRight size={18} />
+            </div>
+          </Link>
+
+          {/* Creators Card */}
+          <div className="w-full bg-[#E8DDED]/70 dark:bg-[#1C1625] rounded-[20px] p-4 border border-transparent dark:border-[#2D2438] space-y-2.5">
+            <div className="text-xs font-bold text-[#8A56A4] dark:text-[#C49CE6] uppercase tracking-wider">
+              <span>Syntaxa Creators</span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div className="bg-white/80 dark:bg-[#0F0A15]/60 p-2.5 rounded-xl flex items-center gap-2 border border-black/5 dark:border-white/5">
+                <Palette size={15} className="text-pink-500 shrink-0" />
+                <div className="truncate">
+                  <span className="text-gray-500 dark:text-gray-400 block text-[10px]">UI/UX Design</span>
+                  <span className="font-bold text-gray-900 dark:text-white truncate">Fariha Munir Prity</span>
+                </div>
+              </div>
+
+              <div className="bg-white/80 dark:bg-[#0F0A15]/60 p-2.5 rounded-xl flex items-center gap-2 border border-black/5 dark:border-white/5">
+                <Code2 size={15} className="text-cyan-500 shrink-0" />
+                <div className="truncate">
+                  <span className="text-gray-500 dark:text-gray-400 block text-[10px]">Development</span>
+                  <span className="font-bold text-gray-900 dark:text-white truncate">Md Omar Faruk Chowdhury</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center pt-1">
+              <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                Syntaxa v1.0 • Gamified English Grammar Learning
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Avatar Picker Modal */}
