@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, XCircle, ArrowRight, RotateCcw, ArrowLeft, Sparkles } from "lucide-react";
 import quizData from "@/data/quiz.json";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/AuthContext";
 import { toast } from "sonner";
 import { recordQuizCompleted } from "@/lib/userStats";
 import type { WeakTopicsMap } from "@/lib/ai/types";
@@ -49,6 +50,7 @@ function guessQuestionTopic(question: string): string {
 }
 
 export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] }: QuizGameProps) {
+  const { user, isAuthenticated } = useAuth();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
