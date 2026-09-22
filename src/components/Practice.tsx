@@ -27,6 +27,26 @@ type Lesson = {
 
 type PracticeMode = "sentence" | "writing";
 
+function getPracticeInstruction(question: string) {
+  if (/\b(said|asked|told|advised|ordered|warned|exclaimed)\b/i.test(question)) {
+    return "Rewrite in Reported Speech";
+  }
+
+  if (/,[\s_]+(?:isn't|aren't|don't|doesn't|didn't|can't|won't|will|shall|should|hasn't|haven't|wasn't|weren't)?\s*\w+\??$/i.test(question)) {
+    return "Add the Question Tag";
+  }
+
+  if (/___\s*\(([^)]+\/[^)]+)\)/.test(question)) {
+    return "Choose the Correct Option";
+  }
+
+  if (/___\s*\(([^)]+)\)/.test(question)) {
+    return "Use the Correct Form";
+  }
+
+  return "Complete the Sentence";
+}
+
 export default function Practice() {
   const [userInput, setUserInput] = useState("");
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
@@ -189,7 +209,7 @@ export default function Practice() {
         ) : (
           <div className="bg-white dark:bg-[#1C1625] rounded-[40px] p-8 shadow-xl space-y-6 border border-gray-50 dark:border-[#2D2438] flex flex-col items-center text-center">
             <span className="bg-transparent text-[#8A56A4] dark:text-[#A87BC7]   dark:border-[#A87BC7] text-[13px] font-black px-4 py-1.5 rounded-[10px] uppercase tracking-wide">
-                Correct The Sentence
+                {getPracticeInstruction(currentSentence.question)}
             </span>
 
             <div className="space-y-4 w-full">
