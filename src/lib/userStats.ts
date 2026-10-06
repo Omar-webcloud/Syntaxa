@@ -10,6 +10,17 @@ export interface QuizHistoryItem {
   timestamp: number;
 }
 
+export interface SkillMastery {
+  skill: string;
+  attempts: number;
+  correct: number;
+  accuracy: number;
+  mastery: number;
+  lastPracticed: number | null;
+  nextReview: number | null;
+  recentResults: boolean[];
+}
+
 export interface UserStats {
   streak: number;
   lastActiveDate: string | null;
@@ -22,6 +33,7 @@ export interface UserStats {
   quizHistory: QuizHistoryItem[];
   dictionaryLookups: number;
   writingChecks: number;
+  skillMastery: Record<string, SkillMastery>;
 }
 
 const STATS_STORAGE_KEY = "syntaxa_user_stats";
@@ -40,6 +52,7 @@ export const DEFAULT_USER_STATS: UserStats = {
   quizHistory: [],
   dictionaryLookups: 0,
   writingChecks: 0,
+  skillMastery: {},
 };
 
 function getTodayString(): string {
@@ -67,13 +80,74 @@ export function getUserStats(): UserStats {
     const raw = localStorage.getItem(STATS_STORAGE_KEY);
     if (!raw) return DEFAULT_USER_STATS;
     const parsed = JSON.parse(raw);
-    return {
+    const merged: UserStats = {
       ...DEFAULT_USER_STATS,
       ...parsed,
+      skillMastery: parsed.skillMastery || {},
     };
+    // Migrate the original weak-topic tracker into the richer mastery model.
+    if (Object.keys(merged.skillMastery).length === 0) {
+      const weakRaw = localStorage.getItem("syntaxa_weak_topics");
+      if (weakRaw) {
+        const weakMap = JSON.parse(weakRaw) as Record<string, { wrong: number; total: number }>;
+        for (const [skill, topic] of Object.entries(weakMap)) {
+          if (!topic || topic.total <= 0) continue;
+          const accuracy = Math.round(((topic.total - topic.wrong) / topic.total) * 100);
+          merged.skillMastery[skill] = {
+            skill, attempts: topic.total, correct: topic.total - topic.wrong,
+            accuracy, mastery: Math.max(0, Math.min(100, Math.round(accuracy * 0.8))),
+            lastPracticed: null, nextReview: Date.now(), recentResults: [],
+          };
+        }
+      }
+    }
+    return merged;
   } catch {
     return DEFAULT_USER_STATS;
   }
+}
+
+export function recordSkillPerformance(skill: string, correct: boolean): UserStats {
+  const base = getUserStats();
+  const previous = base.skillMastery[skill] || {
+    skill,
+    attempts: 0,
+    correct: 0,
+    accuracy: 0,
+    mastery: 0,
+    lastPracticed: null,
+    nextReview: null,
+    recentResults: [],
+  };
+  const attempts = previous.attempts + 1;
+  const accuracy = Math.round(((previous.correct + (correct ? 1 : 0)) / attempts) * 100);
+  const recentResults = [...previous.recentResults, correct].slice(-8);
+  const recentAccuracy = recentResults.length
+    ? (recentResults.filter(Boolean).length / recentResults.length) * 100
+    : accuracy;
+  const experience = Math.min(20, attempts * 2);
+  const mastery = Math.max(0, Math.min(100, Math.round(accuracy * 0.65 + experience + recentAccuracy * 0.15)));
+  const intervalDays = mastery < 45 ? 1 : mastery < 65 ? 3 : mastery < 85 ? 7 : 14;
+  const now = Date.now();
+  const nextReview = now + intervalDays * 24 * 60 * 60 * 1000;
+  const updated: UserStats = {
+    ...base,
+    skillMastery: {
+      ...base.skillMastery,
+      [skill]: {
+        ...previous,
+        attempts,
+        correct: previous.correct + (correct ? 1 : 0),
+        accuracy,
+        mastery,
+        lastPracticed: now,
+        nextReview,
+        recentResults,
+      },
+    },
+  };
+  saveUserStats(updated);
+  return updated;
 }
 
 export function saveUserStats(stats: UserStats): void {

@@ -7,7 +7,7 @@ import quizData from "@/data/quiz.json";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
 import { toast } from "sonner";
-import { recordQuizCompleted } from "@/lib/userStats";
+import { recordQuizCompleted, recordSkillPerformance } from "@/lib/userStats";
 import type { WeakTopicsMap } from "@/lib/ai/types";
 
 type QuizQuestion = {
@@ -206,6 +206,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
 
       for (const result of questionResults) {
         const topic = guessQuestionTopic(result.questionText);
+        recordSkillPerformance(topic, result.correct);
         if (!weakMap[topic]) {
           weakMap[topic] = { wrong: 0, total: 0 };
         }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import QuizGame from "@/components/QuizGame";
 import Dashboard from "@/components/Dashboard";
+import GuidedLesson from "@/components/GuidedLesson";
 
 interface QuizOptions {
   aiGenerated?: boolean;
@@ -12,6 +13,7 @@ interface QuizOptions {
 export default function Home() {
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizOptions, setQuizOptions] = useState<QuizOptions>({});
+  const [lessonSkill, setLessonSkill] = useState<string | null>(null);
 
   const handleStartQuiz = (options?: QuizOptions) => {
     setQuizOptions(options || {});
@@ -20,7 +22,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {showQuiz ? (
+      {lessonSkill ? (
+        <GuidedLesson skill={lessonSkill} onBack={() => setLessonSkill(null)} />
+      ) : showQuiz ? (
         <QuizGame
           onBack={() => {
             setShowQuiz(false);
@@ -30,7 +34,7 @@ export default function Home() {
           weakTopics={quizOptions.weakTopics}
         />
       ) : (
-        <Dashboard onStartQuiz={handleStartQuiz} />
+        <Dashboard onStartQuiz={handleStartQuiz} onStartLesson={setLessonSkill} />
       )}
     </main>
   );

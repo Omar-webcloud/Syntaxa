@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { Clock, HelpCircle, ArrowRight, Sparkles } from "lucide-react";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { useUserStats } from "@/lib/userStats";
+import { buildLearningPlan } from "@/lib/learningPlan";
 import type { WeakTopicsMap } from "@/lib/ai/types";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,9 +17,10 @@ interface QuizStartOptions {
 
 interface DashboardProps {
   onStartQuiz: (options?: QuizStartOptions) => void;
+  onStartLesson: (skill: string) => void;
 }
 
-export default function Dashboard({ onStartQuiz }: DashboardProps) {
+export default function Dashboard({ onStartQuiz, onStartLesson }: DashboardProps) {
   const { user } = useAuth();
   const { stats } = useUserStats();
   const [weakTopicNames] = useState<string[]>(() => {
@@ -46,6 +48,8 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
   ];
 
   const activeDaysThisWeek = stats.weeklyActivity.filter(Boolean).length;
+  const learningPlan = buildLearningPlan(stats);
+  const hasLearningData = Object.keys(stats.skillMastery).some((skill) => stats.skillMastery[skill].attempts > 0);
 
   return (
     <div className="min-h-screen bg-[#FDF9FF] dark:bg-[#0F0A15] p-6 pb-24 space-y-8 animate-in fade-in duration-500">
@@ -72,6 +76,24 @@ export default function Dashboard({ onStartQuiz }: DashboardProps) {
           />
         </Link>
       </div>
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-black text-gray-900 dark:text-white">My Learning Plan</h2>
+          <span className="text-xs font-bold text-[#8A56A4]">{learningPlan.today.estimatedMinutes} min</span>
+        </div>
+        <div className="rounded-[28px] bg-white p-6 shadow-sm border border-gray-100 dark:border-gray-800 dark:bg-[#1C1625] space-y-5">
+          {!hasLearningData ? (
+            <div className="space-y-3"><p className="text-xl font-black text-gray-900 dark:text-white">Let&apos;s find your starting point.</p><p className="text-sm text-gray-500 dark:text-gray-400">Complete a short assessment to discover your current level and weak areas.</p><button onClick={() => onStartQuiz()} className="w-full rounded-2xl bg-[#8A56A4] py-4 font-bold text-white">Take Your First Quiz</button></div>
+          ) : <>
+            <div className="flex items-end justify-between"><div><p className="text-xs font-bold uppercase tracking-wider text-gray-400">Estimated level</p><p className="mt-1 text-xl font-black text-gray-900 dark:text-white">{learningPlan.level || "Building your profile"}</p></div><p className="text-2xl font-black text-[#8A56A4]">{learningPlan.overallProgress}%</p></div>
+            <div><div className="mb-2 flex justify-between text-xs font-bold text-gray-500"><span>Overall progress</span><span>{learningPlan.overallProgress}%</span></div><div className="h-2 rounded-full bg-[#F3EEF6] dark:bg-[#0F0A15]"><div className="h-2 rounded-full bg-[#8A56A4] transition-all" style={{ width: `${learningPlan.overallProgress}%` }} /></div></div>
+            <div><p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Weakest areas</p><div className="space-y-2">{learningPlan.weakestAreas.map((area) => <div key={area.skill} className="flex justify-between text-sm font-bold"><span className="text-gray-700 dark:text-gray-300">{area.skill}</span><span className="text-[#8A56A4]">{area.mastery}%</span></div>)}{learningPlan.weakestAreas.length === 0 && <p className="text-sm text-gray-500">Your first results will shape this list.</p>}</div></div>
+            <div className="rounded-2xl bg-[#FFF9E5] p-4 dark:bg-[#2D2A1F]"><p className="text-xs font-bold uppercase tracking-wider text-gray-500">Today&apos;s focus</p><p className="mt-1 text-lg font-black text-gray-900 dark:text-white">{learningPlan.today.skill}</p><div className="mt-3 space-y-2">{learningPlan.today.steps.map((step) => <div key={step.type} className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300"><span className="h-1.5 w-1.5 rounded-full bg-[#FC9502]" />{step.title}</div>)}</div></div>
+            <button onClick={() => onStartLesson(learningPlan.today.skill)} className="w-full rounded-2xl bg-[#8A56A4] py-4 font-bold text-white shadow-lg shadow-purple-100 dark:shadow-none">Start Today&apos;s Lesson</button>
+          </>}
+        </div>
+      </section>
 
       {/* Hero Quiz Card */}
       <div className="bg-white dark:bg-[#1C1625] rounded-[32px] p-6 shadow-sm border border-gray-100 dark:border-gray-800 space-y-6">
