@@ -2,10 +2,13 @@
 
 import { Check, Star, Lock, Lightbulb, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useUserStats } from "@/lib/userStats";
+import { useState } from "react";
+import { toast } from "sonner";
+import { redeemGemReward, useUserStats } from "@/lib/userStats";
 
 export default function Rewards() {
   const { stats } = useUserStats();
+  const [redeeming, setRedeeming] = useState<"hint" | "advancedQuiz" | null>(null);
   const GEMS = stats.gems;
   const STREAK = stats.streak;
 
@@ -13,6 +16,19 @@ export default function Rewards() {
   const grammarMasterProgress = Math.min(100, Math.round((stats.practicedWords / 10) * 100));
   const streakProgress = Math.min(100, Math.round((stats.streak / 7) * 100));
   const lessonsProgress = Math.min(100, Math.round((stats.quizzesCompleted / 100) * 100));
+
+  const handleRedeem = (reward: "hint" | "advancedQuiz") => {
+    setRedeeming(reward);
+    const result = redeemGemReward(reward);
+    setRedeeming(null);
+    if (result.success) {
+      toast.success(reward === "hint" ? "Hint Unlock purchased" : "Advanced Quiz unlocked", {
+        description: reward === "hint" ? "Hints are now available in every quiz." : "Start it from your Dashboard.",
+      });
+    } else {
+      toast.error("Not enough gems", { description: result.message });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F3EEF6] dark:bg-[#0F0A15] font-sans text-black dark:text-[#F3F4F6] flex flex-col items-center pb-24 transition-colors duration-300">
@@ -115,18 +131,34 @@ export default function Rewards() {
 
         <div className="space-y-4">
             <h3 className="font-extrabold text-black dark:text-[#F3F4F6] text-lg sm:text-[20px] px-1">Redeem Your Gems</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center gap-3 border border-gray-50 dark:border-[#2D2438]">
                      <div className="w-12 h-12 bg-gray-100 dark:bg-[#2D2438] rounded-full flex items-center justify-center overflow-hidden">
                         <Lightbulb className="text-yellow-500" fill="currentColor" />
                      </div>
                      <span className="text-[14px] font-bold text-black dark:text-[#F3F4F6]">Hint Unlock</span>
+                     <p className="text-xs text-center text-gray-500 dark:text-gray-400">Use helpful clues while answering.</p>
+                     <button
+                       onClick={() => handleRedeem("hint")}
+                       disabled={stats.hintUnlocked || redeeming !== null}
+                       className={cn("w-full rounded-2xl py-3 text-sm font-bold transition-colors", stats.hintUnlocked ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" : "bg-[#8A56A4] text-white hover:bg-[#7D4D95] disabled:bg-gray-300 dark:disabled:bg-[#3D334D]")}
+                     >
+                       {redeeming === "hint" ? "Unlocking..." : stats.hintUnlocked ? "Unlocked" : "💎 100 Gems"}
+                     </button>
                  </div>
                  <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center gap-3 border border-gray-50 dark:border-[#2D2438]">
                      <div className="w-12 h-12 bg-gray-100 dark:bg-[#2D2438] rounded-full flex items-center justify-center overflow-hidden">
                         <GraduationCap className="text-blue-500" />
                      </div>
                      <span className="text-[14px] font-bold text-black dark:text-[#F3F4F6]">Advanced Quiz</span>
+                     <p className="text-xs text-center text-gray-500 dark:text-gray-400">Challenge yourself with AI-generated questions.</p>
+                     <button
+                       onClick={() => handleRedeem("advancedQuiz")}
+                       disabled={stats.advancedQuizUnlocked || redeeming !== null}
+                       className={cn("w-full rounded-2xl py-3 text-sm font-bold transition-colors", stats.advancedQuizUnlocked ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" : "bg-[#8A56A4] text-white hover:bg-[#7D4D95] disabled:bg-gray-300 dark:disabled:bg-[#3D334D]")}
+                     >
+                       {redeeming === "advancedQuiz" ? "Unlocking..." : stats.advancedQuizUnlocked ? "Unlocked" : "💎 150 Gems"}
+                     </button>
                  </div>
             </div>
         </div>

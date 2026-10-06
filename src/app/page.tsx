@@ -8,6 +8,7 @@ import GuidedLesson from "@/components/GuidedLesson";
 interface QuizOptions {
   aiGenerated?: boolean;
   weakTopics?: string[];
+  advancedQuiz?: boolean;
 }
 
 export default function Home() {
@@ -32,6 +33,7 @@ export default function Home() {
           }}
           aiGenerated={quizOptions.aiGenerated}
           weakTopics={quizOptions.weakTopics}
+          advancedQuiz={quizOptions.advancedQuiz}
         />
       ) : (
         <Dashboard onStartQuiz={handleStartQuiz} onStartLesson={setLessonSkill} />

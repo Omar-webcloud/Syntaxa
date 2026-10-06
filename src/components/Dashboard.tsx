@@ -13,6 +13,7 @@ import Image from "next/image";
 interface QuizStartOptions {
   aiGenerated?: boolean;
   weakTopics?: string[];
+  advancedQuiz?: boolean;
 }
 
 interface DashboardProps {
@@ -145,6 +146,15 @@ export default function Dashboard({ onStartQuiz, onStartLesson }: DashboardProps
             >
               <Sparkles size={18} />
               Generate AI Quiz for Weak Spots
+            </button>
+          )}
+
+          {stats.advancedQuizUnlocked && (
+            <button
+              onClick={() => onStartQuiz({ aiGenerated: true, weakTopics: ["Tenses", "Articles & Preposition", "Sentence Structure"], advancedQuiz: true })}
+              className="w-full py-4 bg-[#111] dark:bg-white text-white dark:text-black rounded-2xl font-bold text-base flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:opacity-90"
+            >
+              🎓 Start Advanced Quiz
             </button>
           )}
         </div>

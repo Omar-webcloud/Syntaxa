@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, XCircle, ArrowRight, RotateCcw, ArrowLeft, Sparkles } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight, RotateCcw, ArrowLeft, Sparkles, GraduationCap, Lightbulb } from "lucide-react";
 import quizData from "@/data/quiz.json";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/AuthContext";
 import { toast } from "sonner";
-import { recordQuizCompleted, recordSkillPerformance } from "@/lib/userStats";
+import { recordQuizCompleted, recordSkillPerformance, useUserStats } from "@/lib/userStats";
 import type { WeakTopicsMap } from "@/lib/ai/types";
 
 type QuizQuestion = {
@@ -21,6 +21,7 @@ interface QuizGameProps {
   onBack: () => void;
   aiGenerated?: boolean;
   weakTopics?: string[];
+  advancedQuiz?: boolean;
 }
 
 // Topic keywords used to map questions → lesson topics for weak-topic tracking
@@ -49,8 +50,9 @@ function guessQuestionTopic(question: string): string {
   return bestTopic;
 }
 
-export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] }: QuizGameProps) {
+export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [], advancedQuiz = false }: QuizGameProps) {
   const { user, isAuthenticated } = useAuth();
+  const { stats } = useUserStats();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -62,8 +64,10 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
   const [isAiQuiz, setIsAiQuiz] = useState(false);
   // Track per-question results for weak-topic logging
   const [questionResults, setQuestionResults] = useState<Array<{ questionText: string; correct: boolean }>>([]);
+  const [showHint, setShowHint] = useState(false);
 
   const MAX_QUESTIONS = 10;
+  const quizStorageKey = advancedQuiz ? "syntaxa_advanced_quiz_state" : "syntaxa_quiz_state";
 
   const processRawQuestions = (rawQuestions: Array<{ id: number; question: string; answer: string }>) => {
     const allAnswers = Array.from(
@@ -116,6 +120,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
     setQuizFinished(false);
     setIsAiQuiz(false);
     setQuestionResults([]);
+    setShowHint(false);
   };
 
   const initQuizFromAI = async (topics: string[]) => {
@@ -138,6 +143,8 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
         setQuizFinished(false);
         setIsAiQuiz(true);
         setQuestionResults([]);
+        setShowHint(false);
+        setGenerating(false);
         return;
       }
     } catch (err) {
@@ -152,7 +159,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
 
   useEffect(() => {
     setMounted(true);
-    const savedState = localStorage.getItem("syntaxa_quiz_state");
+    const savedState = localStorage.getItem(quizStorageKey);
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
@@ -180,7 +187,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
 
   useEffect(() => {
     if (mounted && questions.length > 0) {
-      localStorage.setItem("syntaxa_quiz_state", JSON.stringify({
+      localStorage.setItem(quizStorageKey, JSON.stringify({
         questions,
         currentQuestionIndex,
         score,
@@ -191,7 +198,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
         questionResults,
       }));
     }
-  }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted, isAiQuiz, questionResults]);
+  }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted, isAiQuiz, questionResults, quizStorageKey]);
 
   // Log weak topics and dynamic stats on quiz completion
   useEffect(() => {
@@ -256,6 +263,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
         setCurrentQuestionIndex(prev => prev + 1);
         setSelectedOption(null);
         setFeedback(null);
+        setShowHint(false);
       }
       return;
     }
@@ -294,7 +302,12 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
             Welcome {isAuthenticated ? `Back, ${user?.username}!` : "to Syntaxa!"}
           </p>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111] dark:text-[#F3F4F6]">
-            {isAiQuiz ? (
+            {advancedQuiz ? (
+              <span className="flex items-center gap-2">
+                <GraduationCap size={24} className="text-[#FC9502]" />
+                Advanced Quiz
+              </span>
+            ) : isAiQuiz ? (
               <span className="flex items-center gap-2">
                 <Sparkles size={24} className="text-[#FC9502]" />
                 AI-Generated Quiz
@@ -332,10 +345,16 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
                         <span className="bg-[#F0E4FF] dark:bg-[#2D1F3D] text-[#8A56A4] dark:text-[#A87BC7] text-[14px] font-bold px-4 py-1.5 rounded-full">
                             Fill In
                         </span>
-                        <div className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity">
-                            <span className="text-[14px] font-bold text-[#FC9502]">Hint (-5)</span>
-                            <span className="text-xl">💎</span>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => stats.hintUnlocked && setShowHint((visible) => !visible)}
+                          disabled={!stats.hintUnlocked}
+                          className={cn("flex items-center gap-1.5 transition-opacity", stats.hintUnlocked ? "cursor-pointer hover:opacity-80" : "cursor-not-allowed opacity-60")}
+                        >
+                          <Lightbulb size={16} className={stats.hintUnlocked ? "text-[#FC9502]" : "text-gray-400"} />
+                          <span className="text-[14px] font-bold text-[#FC9502]">{stats.hintUnlocked ? "Hint" : "Hint locked"}</span>
+                          {!stats.hintUnlocked && <span className="text-xs text-gray-400">(Rewards)</span>}
+                        </button>
                     </div>
 
                     <h3 className="text-[20px] sm:text-[22px] font-black leading-tight text-black dark:text-[#F3F4F6]">
@@ -389,6 +408,11 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [] 
                                 Keep trying! The correct answer was {currentQ.answer}.
                             </span>
                         </div>
+                    )}
+                    {showHint && stats.hintUnlocked && feedback === null && (
+                      <div className="rounded-2xl bg-[#FFF9E5] px-4 py-3 text-sm font-medium text-gray-700 dark:bg-[#2D2A1F] dark:text-gray-300">
+                        Hint: look for the grammar clue in the sentence, such as the subject or time expression.
+                      </div>
                     )}
                 </motion.div>
             </AnimatePresence>

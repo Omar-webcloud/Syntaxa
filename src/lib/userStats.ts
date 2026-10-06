@@ -34,6 +34,8 @@ export interface UserStats {
   dictionaryLookups: number;
   writingChecks: number;
   skillMastery: Record<string, SkillMastery>;
+  hintUnlocked: boolean;
+  advancedQuizUnlocked: boolean;
 }
 
 const STATS_STORAGE_KEY = "syntaxa_user_stats";
@@ -53,6 +55,8 @@ export const DEFAULT_USER_STATS: UserStats = {
   dictionaryLookups: 0,
   writingChecks: 0,
   skillMastery: {},
+  hintUnlocked: false,
+  advancedQuizUnlocked: false,
 };
 
 function getTodayString(): string {
@@ -84,6 +88,8 @@ export function getUserStats(): UserStats {
       ...DEFAULT_USER_STATS,
       ...parsed,
       skillMastery: parsed.skillMastery || {},
+      hintUnlocked: parsed.hintUnlocked === true,
+      advancedQuizUnlocked: parsed.advancedQuizUnlocked === true,
     };
     // Migrate the original weak-topic tracker into the richer mastery model.
     if (Object.keys(merged.skillMastery).length === 0) {
@@ -105,6 +111,39 @@ export function getUserStats(): UserStats {
   } catch {
     return DEFAULT_USER_STATS;
   }
+}
+
+export type GemReward = "hint" | "advancedQuiz";
+
+const GEM_REWARD_COSTS: Record<GemReward, number> = {
+  hint: 100,
+  advancedQuiz: 150,
+};
+
+export function redeemGemReward(reward: GemReward): {
+  success: boolean;
+  stats: UserStats;
+  message: string;
+} {
+  const stats = getUserStats();
+  const alreadyUnlocked = reward === "hint" ? stats.hintUnlocked : stats.advancedQuizUnlocked;
+  if (alreadyUnlocked) {
+    return { success: true, stats, message: "Already unlocked" };
+  }
+
+  const cost = GEM_REWARD_COSTS[reward];
+  if (stats.gems < cost) {
+    return { success: false, stats, message: `You need ${cost - stats.gems} more gems` };
+  }
+
+  const updated: UserStats = {
+    ...stats,
+    gems: stats.gems - cost,
+    hintUnlocked: reward === "hint" ? true : stats.hintUnlocked,
+    advancedQuizUnlocked: reward === "advancedQuiz" ? true : stats.advancedQuizUnlocked,
+  };
+  saveUserStats(updated);
+  return { success: true, stats: updated, message: "Unlocked" };
 }
 
 export function recordSkillPerformance(skill: string, correct: boolean): UserStats {
