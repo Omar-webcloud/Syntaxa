@@ -177,7 +177,7 @@ export default function Account() {
                     <Trophy size={20} className="text-[#3AAAFF]" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Gem</span>
+                    <span className="text-[12px] font-medium text-gray-500 dark:text-[#9CA3AF]">Total Gems</span>
                     <span className="text-base sm:text-[18px] font-bold text-black dark:text-[#F3F4F6]">{stats.gems}</span>
                 </div>
             </div>

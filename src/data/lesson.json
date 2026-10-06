@@ -77,6 +77,34 @@
       ]
     },
     {
+      "topic": "Verbs",
+      "title": "Use verb forms, patterns and complements accurately",
+      "patterns": [
+        { "id": 31, "pattern": "make/let + object + base verb", "rule": "Use the base verb after make or let", "example": "She made me tell the truth." },
+        { "id": 32, "pattern": "enjoy/avoid + verb-ing", "rule": "Use a gerund after these verbs", "example": "He avoided answering the question." },
+        { "id": 33, "pattern": "decide/want + to + base verb", "rule": "Use the infinitive after many intention verbs", "example": "She wants to learn English." },
+        { "id": 34, "pattern": "look forward to + verb-ing", "rule": "Here to is a preposition, so use -ing", "example": "I look forward to meeting you." },
+        { "id": 35, "pattern": "have + object + past participle", "rule": "Use this causative pattern for arranged actions", "example": "They had their house painted." },
+        { "id": 36, "pattern": "be + past participle", "rule": "Form the passive with be and a past participle", "example": "The letter was written by him." },
+        { "id": 37, "pattern": "subject-verb agreement", "rule": "Singular subjects take singular verb forms", "example": "Everyone likes ice cream." },
+        { "id": 38, "pattern": "verb + object + complement", "rule": "Some verbs take an object followed by a complement", "example": "The teacher let us leave early." }
+      ]
+    },
+    {
+      "topic": "Prepositions",
+      "title": "Choose precise prepositions for time, place and relationships",
+      "patterns": [
+        { "id": 41, "pattern": "responsible for", "rule": "Use for to name a duty or task", "example": "She is responsible for the project." },
+        { "id": 42, "pattern": "arrive at/in", "rule": "Use at for a point and in for a city or country", "example": "We arrived at the airport early." },
+        { "id": 43, "pattern": "since + starting point", "rule": "Use since with a specific starting time", "example": "He has been absent since Monday." },
+        { "id": 44, "pattern": "onto + surface", "rule": "Use onto for movement to a surface", "example": "The cat jumped onto the table." },
+        { "id": 45, "pattern": "belong to", "rule": "Use to after belong", "example": "This book belongs to me." },
+        { "id": 46, "pattern": "in + year/month/place", "rule": "Use in for longer periods and enclosed areas", "example": "She was born in 2000." },
+        { "id": 47, "pattern": "on + day/date", "rule": "Use on for specific days and dates", "example": "He came on Monday." },
+        { "id": 48, "pattern": "at + exact time", "rule": "Use at for clock times", "example": "The class starts at 10 AM." }
+      ]
+    },
+    {
       "topic": "Articles & Preposition",
       "title": "Master the use of articles and prepositions",
       "patterns": [

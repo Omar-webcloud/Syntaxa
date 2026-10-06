@@ -117,5 +117,29 @@
   {"id":97,"question":"He bought ___ umbrella. (a/an)","answer":"an"},
   {"id":98,"question":"This is ___ unique idea. (a/an)","answer":"a"},
   {"id":99,"question":"He is ___ university student. (a/an)","answer":"a"},
-  {"id":100,"question":"She waited ___ hour. (a/an)","answer":"an"}
+  {"id":100,"question":"She waited ___ hour. (a/an)","answer":"an"},
+
+  {"id":101,"question":"She ___ for two hours. (has been studying/is studying)","answer":"has been studying"},
+  {"id":102,"question":"By next month, they ___ the project. (will have finished/will finish)","answer":"will have finished"},
+  {"id":103,"question":"When I arrived, he ___. (had left/has left)","answer":"had left"},
+  {"id":104,"question":"We ___ dinner when the phone rang. (were having/have)","answer":"were having"},
+  {"id":105,"question":"I ___ to Dhaka tomorrow. (am traveling/traveled)","answer":"am traveling"},
+
+  {"id":106,"question":"She made me ___ the truth. (tell/to tell)","answer":"tell"},
+  {"id":107,"question":"He avoided ___ the question. (answering/to answer)","answer":"answering"},
+  {"id":108,"question":"The teacher let us ___ early. (leave/to leave)","answer":"leave"},
+  {"id":109,"question":"I look forward to ___ you. (meeting/meet)","answer":"meeting"},
+  {"id":110,"question":"They had their house ___. (painted/paint)","answer":"painted"},
+
+  {"id":111,"question":"She is ___ European artist. (a/an)","answer":"a"},
+  {"id":112,"question":"___ Mount Everest is the highest mountain above sea level. (A/The)","answer":"The"},
+  {"id":113,"question":"She plays ___ piano beautifully. (a/the)","answer":"the"},
+  {"id":114,"question":"We had ___ breakfast before school. (some/a)","answer":"some"},
+  {"id":115,"question":"He wants to become ___ engineer. (a/an)","answer":"an"},
+
+  {"id":116,"question":"She is responsible ___ the project. (for/of)","answer":"for"},
+  {"id":117,"question":"We arrived ___ the airport early. (at/in)","answer":"at"},
+  {"id":118,"question":"He has been absent ___ Monday. (since/for)","answer":"since"},
+  {"id":119,"question":"The cat jumped ___ the table. (onto/at)","answer":"onto"},
+  {"id":120,"question":"This book belongs ___ me. (to/for)","answer":"to"}
 ]

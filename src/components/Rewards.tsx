@@ -4,7 +4,7 @@ import { Check, Star, Lock, Lightbulb, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
-import { redeemGemReward, useUserStats } from "@/lib/userStats";
+import { getGemRewardCost, redeemGemReward, useUserStats } from "@/lib/userStats";
 
 export default function Rewards() {
   const { stats } = useUserStats();
@@ -143,7 +143,7 @@ export default function Rewards() {
                        disabled={stats.hintUnlocked || redeeming !== null}
                        className={cn("w-full rounded-2xl py-3 text-sm font-bold transition-colors", stats.hintUnlocked ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" : "bg-[#8A56A4] text-white hover:bg-[#7D4D95] disabled:bg-gray-300 dark:disabled:bg-[#3D334D]")}
                      >
-                       {redeeming === "hint" ? "Unlocking..." : stats.hintUnlocked ? "Unlocked" : "💎 100 Gems"}
+                       {redeeming === "hint" ? "Unlocking..." : stats.hintUnlocked ? "Unlocked" : `💎 ${getGemRewardCost("hint")} Gems`}
                      </button>
                  </div>
                  <div className="bg-white dark:bg-[#1C1625] p-4 rounded-[28px] shadow-sm flex flex-col items-center gap-3 border border-gray-50 dark:border-[#2D2438]">
@@ -157,7 +157,7 @@ export default function Rewards() {
                        disabled={stats.advancedQuizUnlocked || redeeming !== null}
                        className={cn("w-full rounded-2xl py-3 text-sm font-bold transition-colors", stats.advancedQuizUnlocked ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400" : "bg-[#8A56A4] text-white hover:bg-[#7D4D95] disabled:bg-gray-300 dark:disabled:bg-[#3D334D]")}
                      >
-                       {redeeming === "advancedQuiz" ? "Unlocking..." : stats.advancedQuizUnlocked ? "Unlocked" : "💎 150 Gems"}
+                       {redeeming === "advancedQuiz" ? "Unlocking..." : stats.advancedQuizUnlocked ? "Unlocked" : `💎 ${getGemRewardCost("advancedQuiz")} Gems`}
                      </button>
                  </div>
             </div>

@@ -38,10 +38,10 @@ const TOPIC_KEYWORDS: Record<string, string[]> = {
 // these groups remain available to the general daily quiz, but cannot leak into
 // a focused topic quiz.
 const TOPIC_QUESTION_IDS: Record<QuizTopic, number[]> = {
-  Tenses: [1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 36, 37, 38, 39, 40, 56, 57, 58, 59, 60, 91, 92, 93, 94, 95],
-  Verbs: [6, 7, 8, 9, 10, 46, 47, 48, 49, 50, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 81, 82, 83, 84, 85],
-  Articles: [26, 27, 28, 29, 30, 96, 97, 98, 99, 100],
-  Prepositions: [21, 22, 23, 24, 25, 31, 32, 33, 34, 35],
+  Tenses: [1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 36, 37, 38, 39, 40, 56, 57, 58, 59, 60, 91, 92, 93, 94, 95, 101, 102, 103, 104, 105],
+  Verbs: [6, 7, 8, 9, 10, 46, 47, 48, 49, 50, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 81, 82, 83, 84, 85, 106, 107, 108, 109, 110],
+  Articles: [26, 27, 28, 29, 30, 96, 97, 98, 99, 100, 111, 112, 113, 114, 115],
+  Prepositions: [21, 22, 23, 24, 25, 31, 32, 33, 34, 35, 116, 117, 118, 119, 120],
 };
 
 const FALLBACK_TOPIC_IDS: Record<string, number[]> = {
@@ -85,11 +85,14 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
   const [mounted, setMounted] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [isAiQuiz, setIsAiQuiz] = useState(false);
+  const [quizRunId, setQuizRunId] = useState("");
+  const [completionRecorded, setCompletionRecorded] = useState(false);
   // Track per-question results for weak-topic logging
   const [questionResults, setQuestionResults] = useState<Array<{ questionText: string; correct: boolean }>>([]);
   const [showHint, setShowHint] = useState(false);
 
   const MAX_QUESTIONS = 10;
+  const createQuizRunId = () => `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const normalizedQuizTopic = quizTopic && quizTopic in TOPIC_QUESTION_IDS
     ? quizTopic as QuizTopic
     : undefined;
@@ -119,8 +122,12 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
         throw new Error("Quiz question has an invalid format");
       }
 
-      if (!options.includes(q.answer)) {
-        options.push(q.answer);
+      if (options.length < 2 || options.length > 4 || new Set(options.map((option) => option.toLowerCase())).size !== options.length) {
+        throw new Error("Quiz question has an invalid option set");
+      }
+      const matchingAnswer = options.find((option) => option.toLowerCase() === q.answer.trim().toLowerCase());
+      if (!matchingAnswer) {
+        throw new Error("Quiz answer does not match its options");
       }
 
       while (options.length < 4) {
@@ -137,7 +144,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
         id: q.id,
         questionText,
         options,
-        answer: q.answer,
+        answer: matchingAnswer,
       };
     });
   };
@@ -157,6 +164,8 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
     setFeedback(null);
     setQuizFinished(false);
     setIsAiQuiz(false);
+    setQuizRunId(createQuizRunId());
+    setCompletionRecorded(false);
     setQuestionResults([]);
     setShowHint(false);
   };
@@ -180,6 +189,8 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
         setFeedback(null);
         setQuizFinished(false);
         setIsAiQuiz(true);
+        setQuizRunId(createQuizRunId());
+        setCompletionRecorded(false);
         setQuestionResults([]);
         setShowHint(false);
         setGenerating(false);
@@ -208,6 +219,8 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
         setFeedback(parsed.feedback);
         setQuizFinished(parsed.quizFinished);
         setIsAiQuiz(parsed.isAiQuiz || false);
+        setQuizRunId(parsed.quizRunId || `legacy_${quizStorageKey}`);
+        setCompletionRecorded(parsed.completionRecorded === true);
         setQuestionResults(parsed.questionResults || []);
         return;
       } catch (e) {
@@ -233,18 +246,26 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
         feedback,
         quizFinished,
         isAiQuiz,
+        quizRunId,
+        completionRecorded,
         questionResults,
       }));
     }
-  }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted, isAiQuiz, questionResults, quizStorageKey]);
+  }, [questions, currentQuestionIndex, score, selectedOption, feedback, quizFinished, mounted, isAiQuiz, quizRunId, completionRecorded, questionResults, quizStorageKey]);
 
   // Log weak topics and dynamic stats on quiz completion
   useEffect(() => {
-    if (!quizFinished || questionResults.length === 0) return;
+    if (!quizFinished || questionResults.length === 0 || completionRecorded || !quizRunId) return;
 
     try {
+      const completionKey = `syntaxa_completed_quiz_${quizStorageKey}_${quizRunId}`;
+      if (localStorage.getItem(completionKey)) {
+        setCompletionRecorded(true);
+        return;
+      }
+      localStorage.setItem(completionKey, "1");
       const topicName = isAiQuiz ? "AI Practice Quiz" : "Daily Grammar Quiz";
-      recordQuizCompleted(topicName, score, MAX_QUESTIONS);
+      recordQuizCompleted(topicName, score, MAX_QUESTIONS, quizRunId);
 
       const stored = localStorage.getItem("syntaxa_weak_topics");
       const weakMap: WeakTopicsMap = stored ? JSON.parse(stored) : {};
@@ -262,10 +283,11 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
       }
 
       localStorage.setItem("syntaxa_weak_topics", JSON.stringify(weakMap));
+      setCompletionRecorded(true);
     } catch (err) {
       console.error("Failed to save quiz results:", err);
     }
-  }, [quizFinished, questionResults, score, isAiQuiz]);
+  }, [quizFinished, questionResults, score, isAiQuiz, completionRecorded, quizRunId, quizStorageKey]);
 
   if (!mounted || (questions.length === 0 && !generating)) return null;
 

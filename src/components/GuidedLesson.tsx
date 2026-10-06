@@ -12,6 +12,9 @@ type Question = { id: number; question: string; answer: string };
 
 const keywords: Record<string, string[]> = {
   Tenses: ["is", "are", "was", "were", "has", "have", "had", "will", "yesterday", "now"],
+  Verbs: ["go", "play", "eat", "read", "like", "enjoy", "decide", "want", "avoid", "write"],
+  Articles: [" a ", " an ", " the ", "apple", "umbrella", "honest"],
+  Prepositions: [" in ", " on ", " at ", " of ", " to ", " for ", " since ", " between"],
   "Articles & Preposition": ["a/an", "the", " in", " on", " at", " for", " since", " of"],
   "Sentence Structure": ["if", "who", "which", "that", "too", "enough", "and", "but", "or"],
 };

@@ -84,9 +84,12 @@ export function getUserStats(): UserStats {
     const raw = localStorage.getItem(STATS_STORAGE_KEY);
     if (!raw) return DEFAULT_USER_STATS;
     const parsed = JSON.parse(raw);
+    const storedGems = Number(parsed.gems);
     const merged: UserStats = {
       ...DEFAULT_USER_STATS,
       ...parsed,
+      gems: Number.isFinite(storedGems) ? Math.max(0, Math.floor(storedGems)) : 0,
+      quizHistory: Array.isArray(parsed.quizHistory) ? parsed.quizHistory : [],
       skillMastery: parsed.skillMastery || {},
       hintUnlocked: parsed.hintUnlocked === true,
       advancedQuizUnlocked: parsed.advancedQuizUnlocked === true,
@@ -115,10 +118,14 @@ export function getUserStats(): UserStats {
 
 export type GemReward = "hint" | "advancedQuiz";
 
-const GEM_REWARD_COSTS: Record<GemReward, number> = {
+export const GEM_REWARD_COSTS: Record<GemReward, number> = {
   hint: 100,
   advancedQuiz: 150,
 };
+
+export function getGemRewardCost(reward: GemReward): number {
+  return GEM_REWARD_COSTS[reward];
+}
 
 export function redeemGemReward(reward: GemReward): {
   success: boolean;
@@ -131,7 +138,7 @@ export function redeemGemReward(reward: GemReward): {
     return { success: true, stats, message: "Already unlocked" };
   }
 
-  const cost = GEM_REWARD_COSTS[reward];
+  const cost = getGemRewardCost(reward);
   if (stats.gems < cost) {
     return { success: false, stats, message: `You need ${cost - stats.gems} more gems` };
   }
@@ -229,12 +236,14 @@ export function recordActivity(): UserStats {
 
   const newWeekly = [...stats.weeklyActivity];
   newWeekly[dayIdx] = true;
+  const milestoneReward = newStreak > stats.streak && newStreak % 7 === 0 ? 50 : 0;
 
   const updated: UserStats = {
     ...stats,
     streak: newStreak,
     lastActiveDate: today,
     weeklyActivity: newWeekly,
+    gems: stats.gems + milestoneReward,
   };
 
   saveUserStats(updated);
@@ -245,11 +254,17 @@ export function recordQuizCompleted(
   title: string,
   score: number,
   total: number,
+  completionId?: string,
 ): UserStats {
+  const current = getUserStats();
+  const historyId = completionId ? `quiz_${completionId}` : `quiz_${Date.now()}`;
+  if (current.quizHistory.some((item) => item.id === historyId)) {
+    return current;
+  }
   const base = recordActivity();
   const earnedGems = Math.max(10, score * 5); // e.g. 10/10 -> 50 gems
   const historyItem: QuizHistoryItem = {
-    id: `quiz_${Date.now()}`,
+    id: historyId,
     title: title || "Quiz",
     time: "Today",
     score: `${score}/${total} Correct`,
@@ -328,6 +343,12 @@ export function resetUserStats(): void {
     localStorage.removeItem(STATS_STORAGE_KEY);
     sessionStorage.removeItem(STATS_SESSION_KEY);
     localStorage.removeItem("syntaxa_weak_topics");
+    for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+      const key = localStorage.key(index);
+      if (key?.startsWith("syntaxa_") && (key.includes("quiz_state") || key.startsWith("syntaxa_completed_quiz_"))) {
+        localStorage.removeItem(key);
+      }
+    }
     window.dispatchEvent(new Event(STATS_UPDATED_EVENT));
   } catch (err) {
     console.error("Failed to reset user stats:", err);

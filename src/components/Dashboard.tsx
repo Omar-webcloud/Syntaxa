@@ -103,7 +103,7 @@ export default function Dashboard({ onStartQuiz, onStartLesson }: DashboardProps
         <div className="flex justify-end">
           <div className="flex items-center gap-1 bg-[#E8F8FF] dark:bg-[#1A2E35] px-3 py-1.5 rounded-full">
             <span className="text-blue-500">💎</span>
-            <span className="text-sm font-bold text-blue-600 dark:text-blue-400">+30</span>
+            <span className="text-sm font-bold text-blue-600 dark:text-blue-400">Up to +50</span>
           </div>
         </div>
 

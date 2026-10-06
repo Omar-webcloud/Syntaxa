@@ -1,6 +1,6 @@
 import type { SkillMastery, UserStats } from "./userStats";
 
-export const LEARNING_SKILLS = ["Tenses", "Articles & Preposition", "Sentence Structure"];
+export const LEARNING_SKILLS = ["Tenses", "Verbs", "Articles", "Prepositions", "Sentence Structure"];
 
 export type LearningStepType = "review" | "practice" | "writing" | "retest" | "vocabulary";
 

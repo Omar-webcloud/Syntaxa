@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { weakTopics } = body;
-  if (!weakTopics || !Array.isArray(weakTopics) || weakTopics.length === 0) {
+  if (!weakTopics || !Array.isArray(weakTopics) || weakTopics.length === 0 || !weakTopics.every((topic) => typeof topic === "string" && topic.trim().length > 0)) {
     return NextResponse.json<APIErrorResponse>(
       { error: true, message: "weakTopics must be a non-empty array" },
       { status: 400 },
@@ -67,7 +67,12 @@ export async function POST(request: NextRequest) {
   const key = cacheKey("quiz", ...[...weakTopics].sort(), String(questionCount));
   const cached = getCached(key);
   if (cached) {
-    return NextResponse.json(JSON.parse(cached));
+    try {
+      const cachedQuestions = QuizResponseSchema.parse(JSON.parse(cached));
+      return NextResponse.json(cachedQuestions);
+    } catch {
+      // Ignore stale or malformed cache entries and generate a fresh quiz.
+    }
   }
 
   try {
