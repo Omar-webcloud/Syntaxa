@@ -9,6 +9,7 @@ interface QuizOptions {
   aiGenerated?: boolean;
   weakTopics?: string[];
   advancedQuiz?: boolean;
+  quizTopic?: string;
 }
 
 export default function Home() {
@@ -34,6 +35,7 @@ export default function Home() {
           aiGenerated={quizOptions.aiGenerated}
           weakTopics={quizOptions.weakTopics}
           advancedQuiz={quizOptions.advancedQuiz}
+          quizTopic={quizOptions.quizTopic}
         />
       ) : (
         <Dashboard onStartQuiz={handleStartQuiz} onStartLesson={setLessonSkill} />

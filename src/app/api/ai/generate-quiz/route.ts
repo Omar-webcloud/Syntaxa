@@ -5,14 +5,32 @@ import { checkRateLimit, getClientIP } from "@/lib/ai/rate-limit";
 import { getCached, setCache, cacheKey, TTL } from "@/lib/ai/cache";
 import type { GenerateQuizRequest, APIErrorResponse } from "@/lib/ai/types";
 
-// Zod schema matching the quiz.json shape
 const QuizQuestionSchema = z.object({
   id: z.number(),
-  question: z.string(),
-  answer: z.string(),
+  question: z.string().trim().min(8),
+  answer: z.string().trim().min(1),
+}).superRefine((question, context) => {
+  const optionGroups = [...question.question.matchAll(/\(([^()]*)\)/g)];
+  const blanks = (question.question.match(/___/g) || []).length;
+
+  if (blanks !== 1) {
+    context.addIssue({ code: "custom", message: "Question must contain exactly one ___ blank", path: ["question"] });
+  }
+  if (optionGroups.length !== 1) {
+    context.addIssue({ code: "custom", message: "Question must contain exactly one option group", path: ["question"] });
+    return;
+  }
+
+  const options = optionGroups[0][1].split("/").map((option) => option.trim()).filter(Boolean);
+  if (options.length < 2 || options.length > 4 || new Set(options.map((option) => option.toLowerCase())).size !== options.length) {
+    context.addIssue({ code: "custom", message: "Question must contain 2–4 unique slash-separated options", path: ["question"] });
+  }
+  if (!options.some((option) => option.toLowerCase() === question.answer.toLowerCase())) {
+    context.addIssue({ code: "custom", message: "Answer must match one of the options", path: ["answer"] });
+  }
 });
 
-const QuizResponseSchema = z.array(QuizQuestionSchema).min(1).max(15);
+const QuizResponseSchema = z.array(QuizQuestionSchema).length(10);
 
 const SYSTEM_PROMPT = `Generate English grammar multiple-choice questions. Each question must be a single sentence with a blank shown as ___, followed by options in parentheses with a slash separator, and exactly one correct answer. Format as JSON array: [{"id": number, "question": "She ___ (go/goes/going) to school every day.", "answer": "goes"}]. Vary difficulty across CEFR A2–B1. Respond ONLY with the JSON array, no prose.`;
 
@@ -36,7 +54,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { weakTopics, count = 10 } = body;
+  const { weakTopics } = body;
   if (!weakTopics || !Array.isArray(weakTopics) || weakTopics.length === 0) {
     return NextResponse.json<APIErrorResponse>(
       { error: true, message: "weakTopics must be a non-empty array" },
@@ -44,8 +62,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Check cache
-  const key = cacheKey("quiz", ...weakTopics.sort(), String(count));
+  const questionCount = 10;
+  // Check cache. Do not mutate the request's topic array while building the key.
+  const key = cacheKey("quiz", ...[...weakTopics].sort(), String(questionCount));
   const cached = getCached(key);
   if (cached) {
     return NextResponse.json(JSON.parse(cached));
@@ -53,13 +72,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const topicsList = weakTopics.join(", ");
-    const prompt = `Generate ${count} English grammar multiple-choice questions focused on these topics: ${topicsList}. Each question must have options in parentheses within the question text.`;
+    const prompt = `Generate exactly ${questionCount} English grammar multiple-choice questions focused on these topics: ${topicsList}. Each question must contain exactly one ___ blank and exactly one parenthesized option group with 2–4 unique slash-separated options. The answer must be exactly one of those options. Make the completed sentence natural and grammatically correct. Do not include Markdown, explanations, bold text, extra parentheses, or answer choices outside the question text.`;
 
     const result = await complete({
       system: SYSTEM_PROMPT,
       prompt,
       jsonMode: true,
-      maxTokens: 1500,
+      maxTokens: 2200,
     });
 
     const parsed = JSON.parse(result.text);

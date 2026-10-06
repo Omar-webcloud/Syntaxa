@@ -14,6 +14,7 @@ interface QuizStartOptions {
   aiGenerated?: boolean;
   weakTopics?: string[];
   advancedQuiz?: boolean;
+  quizTopic?: string;
 }
 
 interface DashboardProps {
@@ -202,7 +203,7 @@ export default function Dashboard({ onStartQuiz, onStartLesson }: DashboardProps
           {topics.map((topic) => (
             <button 
               key={topic.name} 
-              onClick={() => onStartQuiz()}
+              onClick={() => onStartQuiz({ quizTopic: topic.name })}
               className="px-6 py-3 bg-[#F3EEF6] dark:bg-[#1C1625] rounded-2xl text-gray-900 dark:text-white font-bold whitespace-nowrap active:scale-95 transition-all outline-none hover:bg-[#E8DDED] dark:hover:bg-[#2D2438]"
             >
               {topic.name}

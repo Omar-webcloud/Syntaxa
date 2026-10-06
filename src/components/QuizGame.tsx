@@ -17,11 +17,14 @@ type QuizQuestion = {
   answer: string;
 };
 
+type QuizTopic = "Tenses" | "Verbs" | "Articles" | "Prepositions";
+
 interface QuizGameProps {
   onBack: () => void;
   aiGenerated?: boolean;
   weakTopics?: string[];
   advancedQuiz?: boolean;
+  quizTopic?: string;
 }
 
 // Topic keywords used to map questions → lesson topics for weak-topic tracking
@@ -30,6 +33,26 @@ const TOPIC_KEYWORDS: Record<string, string[]> = {
   "Articles & Preposition": ["a", "an", "the", "in", "on", "at", "of", "to", "for", "from", "with", "by", "since", "during", "between", "among", "preposition", "article"],
   "Sentence Structure": ["clause", "conjunction", "although", "because", "if", "who", "which", "that", "too", "enough", "so...that", "structure", "sentence"],
 };
+
+// Keep the dashboard topics tied to the curated question bank. Questions outside
+// these groups remain available to the general daily quiz, but cannot leak into
+// a focused topic quiz.
+const TOPIC_QUESTION_IDS: Record<QuizTopic, number[]> = {
+  Tenses: [1, 2, 3, 4, 5, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 36, 37, 38, 39, 40, 56, 57, 58, 59, 60, 91, 92, 93, 94, 95],
+  Verbs: [6, 7, 8, 9, 10, 46, 47, 48, 49, 50, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 81, 82, 83, 84, 85],
+  Articles: [26, 27, 28, 29, 30, 96, 97, 98, 99, 100],
+  Prepositions: [21, 22, 23, 24, 25, 31, 32, 33, 34, 35],
+};
+
+const FALLBACK_TOPIC_IDS: Record<string, number[]> = {
+  "Articles & Preposition": [...TOPIC_QUESTION_IDS.Articles, ...TOPIC_QUESTION_IDS.Prepositions],
+  "Sentence Structure": [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 51, 52, 53, 54, 55, 76, 77, 78, 79, 80, 86, 87, 88, 89, 90],
+};
+
+function getStaticQuestionPool(topics: string[]) {
+  const ids = new Set(topics.flatMap((topic) => TOPIC_QUESTION_IDS[topic as QuizTopic] || FALLBACK_TOPIC_IDS[topic] || []));
+  return ids.size ? quizData.filter((question) => ids.has(question.id)) : quizData;
+}
 
 function guessQuestionTopic(question: string): string {
   const q = question.toLowerCase();
@@ -50,7 +73,7 @@ function guessQuestionTopic(question: string): string {
   return bestTopic;
 }
 
-export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [], advancedQuiz = false }: QuizGameProps) {
+export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [], advancedQuiz = false, quizTopic }: QuizGameProps) {
   const { user, isAuthenticated } = useAuth();
   const { stats } = useUserStats();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -67,21 +90,33 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
   const [showHint, setShowHint] = useState(false);
 
   const MAX_QUESTIONS = 10;
-  const quizStorageKey = advancedQuiz ? "syntaxa_advanced_quiz_state" : "syntaxa_quiz_state";
+  const normalizedQuizTopic = quizTopic && quizTopic in TOPIC_QUESTION_IDS
+    ? quizTopic as QuizTopic
+    : undefined;
+  const quizStorageKey = normalizedQuizTopic
+    ? `syntaxa_topic_quiz_state_${normalizedQuizTopic.toLowerCase()}`
+    : aiGenerated
+      ? `syntaxa_ai_quiz_state_${[...weakTopics].sort().join("-").toLowerCase() || "custom"}`
+      : advancedQuiz ? "syntaxa_advanced_quiz_state" : "syntaxa_quiz_state";
 
-  const processRawQuestions = (rawQuestions: Array<{ id: number; question: string; answer: string }>) => {
+  const processRawQuestions = (
+    rawQuestions: Array<{ id: number; question: string; answer: string }>,
+    answerPool: Array<{ answer: string }> = quizData,
+  ) => {
     const allAnswers = Array.from(
-      new Set([...quizData, ...rawQuestions].map((q) => q.answer)),
+      new Set([...answerPool, ...rawQuestions].map((q) => q.answer)),
     );
 
     return rawQuestions.map((q) => {
       let options: string[] = [];
-      const match = q.question.match(/\((.*?)\)/);
+      const matches = [...q.question.matchAll(/\(([^()]*)\)/g)];
       let questionText = q.question;
 
-      if (match) {
-        options = match[1].split("/").map((s) => s.trim());
-        questionText = q.question.replace(/\s*\(.*?\)/, "");
+      if (matches.length === 1 && q.question.includes("___")) {
+        options = matches[0][1].split("/").map((s) => s.trim()).filter(Boolean);
+        questionText = q.question.replace(/\s*\([^()]*\)/, "").trim();
+      } else {
+        throw new Error("Quiz question has an invalid format");
       }
 
       if (!options.includes(q.answer)) {
@@ -107,11 +142,14 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
     });
   };
 
-  const initQuizFromStatic = () => {
-    const shuffled = [...quizData]
+  const initQuizFromStatic = (focusTopics: string[] = []) => {
+    const sourceQuestions = normalizedQuizTopic
+      ? getStaticQuestionPool([normalizedQuizTopic])
+      : getStaticQuestionPool(focusTopics);
+    const shuffled = [...sourceQuestions]
       .sort(() => 0.5 - Math.random())
       .slice(0, MAX_QUESTIONS);
-    const processed = processRawQuestions(shuffled);
+    const processed = processRawQuestions(shuffled, sourceQuestions);
     setQuestions(processed);
     setCurrentQuestionIndex(0);
     setScore(0);
@@ -151,9 +189,9 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
       console.error("AI quiz generation failed:", err);
     }
 
-    // Fallback to static
+    // Fallback to a curated quiz targeting the same weak topics.
     toast.error("Couldn't generate a custom quiz, here's one from our question bank");
-    initQuizFromStatic();
+    initQuizFromStatic(weakTopics);
     setGenerating(false);
   };
 
@@ -313,7 +351,7 @@ export default function QuizGame({ onBack, aiGenerated = false, weakTopics = [],
                 AI-Generated Quiz
               </span>
             ) : (
-              "Your Daily Quiz"
+              normalizedQuizTopic ? `${normalizedQuizTopic} Quiz` : "Your Daily Quiz"
             )}
           </h1>
         </div>

@@ -42,7 +42,7 @@ export interface CheckAnswerResponse {
 
 export interface GenerateQuizRequest {
   weakTopics: string[];
-  count: number;
+  count?: number;
 }
 
 export interface GenerateQuizQuestion {
