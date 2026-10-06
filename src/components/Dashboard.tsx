@@ -52,7 +52,8 @@ export default function Dashboard({ onStartQuiz, onStartLesson }: DashboardProps
   const hasLearningData = Object.keys(stats.skillMastery).some((skill) => stats.skillMastery[skill].attempts > 0);
 
   return (
-    <div className="min-h-screen bg-[#FDF9FF] dark:bg-[#0F0A15] p-6 pb-24 space-y-8 animate-in fade-in duration-500">
+    <div className="min-h-screen bg-[#FDF9FF] dark:bg-[#0F0A15] flex flex-col items-center pb-24 animate-in fade-in duration-500">
+      <div className="w-full max-w-[412px] md:max-w-[768px] p-4 sm:p-6 space-y-8">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="space-y-1">
@@ -220,6 +221,7 @@ export default function Dashboard({ onStartQuiz, onStartLesson }: DashboardProps
             <p className="text-xs text-gray-400">Complete your first daily quiz to start tracking your streak and progress!</p>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
